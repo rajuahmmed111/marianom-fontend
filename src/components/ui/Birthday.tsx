@@ -3,13 +3,14 @@ import React, { useState } from "react";
 import birthdayImage from "@/assets/birthday.jpeg";
 import Image from "next/image";
 import { SlCalender } from "react-icons/sl";
-import birthday from "@/assets/birthdayIcon.png";
+import birthday from "@/assets/birthdayIcon.png"; // Birthday Icon Image
 import birthdayRight from "@/assets/birthdayBallon.png";
 import birthdayBottom from "@/assets/birthdayBallonBottom.png";
 
 export default function Birthday() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedName, setSelectedName] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const birthdayList = Array(12).fill({
     name: "David Saifur",
@@ -22,7 +23,22 @@ export default function Birthday() {
     setModalOpen(true);
   };
 
-  const closeModal = () => setModalOpen(false);
+  const closeModal = () => {
+    setModalOpen(false);
+    setImagePreview("");
+  };
+
+  // Handle image selection and set the preview
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div className="bg-primary min-h-screen p-6 flex-1">
@@ -93,7 +109,7 @@ export default function Birthday() {
             className="bg-secondary rounded-lg relative w-full md:w-[750px] shadow-xl pt-16 px-20 pb-28"
             onClick={(e) => e.stopPropagation()}
           >
-         
+            {/* Balloon images */}
             <Image
               src={birthdayRight}
               alt="Balloon Right"
@@ -113,17 +129,45 @@ export default function Birthday() {
               Wish your friends a happy birthday!
             </p>
 
+            {/* Display the selected image or uploaded image */}
+            {imagePreview && (
+              <div className="mb-6">
+                <img
+                  src={imagePreview}
+                  alt="Uploaded Image"
+                  className="w-full h-auto rounded-lg"
+                />
+              </div>
+            )}
+
+            {/* Image Upload Section */}
+            <div className="relative mb-4">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="uploadImage"
+                onChange={handleImageChange}
+              />
+            </div>
+
             {/* Text Input */}
             <div className="relative">
               <textarea
                 placeholder={`Write on ${selectedName}'s timeline`}
                 className="w-full p-3 rounded-lg bg-transparent text-white border border-white placeholder:text-white pr-16 h-[200px]"
               ></textarea>
-              <Image
-                src={birthday}
-                alt="Birthday Icon"
-                className="absolute right-4 top-4 w-12 h-12"
-              />
+
+              <div
+                className="absolute right-4 top-4 cursor-pointer"
+                onClick={() => document.getElementById("uploadImage")?.click()}
+              >
+                <Image
+                  src={birthday}
+                  alt="Birthday Icon"
+                  className="w-12 h-12"
+                />
+              </div>
             </div>
           </div>
         </div>

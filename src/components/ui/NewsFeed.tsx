@@ -10,6 +10,7 @@ import Birthday from "./Birthday";
 import NewMember from "./NewMember";
 import LatestEveryone from "./LatestEveryone";
 import NeearByOnline from "./NeearByOnline";
+import Link from "next/link";
 
 export default function NewsFeed() {
   const [activeTab, setActiveTab] = useState("global");
@@ -29,7 +30,7 @@ export default function NewsFeed() {
             />
             <div className="mr-5">
               <h2 className="text-lg font-semibold mb-2">LeoPanxon</h2>
-              <p className="text-sm border-b border-[#796943]">My account</p>
+              <Link href='/profile'><p className="border-b border-[#796943]">My account</p></Link>
             </div>
           </div>
 
