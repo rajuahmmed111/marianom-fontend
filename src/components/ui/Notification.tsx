@@ -5,7 +5,7 @@ import { RiMessage2Fill } from "react-icons/ri";
 
 export default function Notification() {
   return (
-    <section className="container bg-primary text-white p-6 rounded-lg shadow-lg mt-48">
+    <section className="md:container w-full bg-primary text-white p-6 rounded-lg shadow-lg mt-48">
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-5">
           <h2 className="text-xl font-semibold text-[28px]">Notification</h2>

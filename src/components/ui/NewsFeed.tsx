@@ -17,7 +17,7 @@ export default function NewsFeed() {
     <div className="pt-48">
       {/* Container Layout */}
       <div className="container flex">
-        <aside className="w-[321px] bg-secondary text-white  p-5 space-y-6 ">
+        <aside className="w-[321px] bg-secondary text-white p-5 space-y-6">
           {/* Profile Section */}
           <div className="flex items-center border-b-2 border-[#796943]">
             <Image
@@ -43,7 +43,7 @@ export default function NewsFeed() {
               onClick={() => setActiveTab("global")}
               className={`font-semibold text-[18px] px-5 py-2 rounded-md ${
                 activeTab === "global"
-                  ? "bg-gradient-to-r from-[#FEB800] to-[#986E00] text-white"
+                  ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
                   : "bg-transparent"
               }`}
             >
@@ -53,7 +53,7 @@ export default function NewsFeed() {
               onClick={() => setActiveTab("people")}
               className={`font-semibold text-[18px] px-5 py-2 rounded-md flex items-center gap-1 ${
                 activeTab === "people"
-                  ? "bg-gradient-to-r from-[#FEB800] to-[#986E00] text-white"
+                  ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
                   : "bg-transparent"
               }`}
             >
@@ -63,7 +63,7 @@ export default function NewsFeed() {
               onClick={() => setActiveTab("online")}
               className={`font-semibold text-[18px] px-5 py-2 rounded-md flex items-center gap-1 ${
                 activeTab === "online"
-                  ? "bg-gradient-to-r from-[#FEB800] to-[#986E00] text-white"
+                  ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
                   : "bg-transparent"
               }`}
             >
@@ -73,18 +73,18 @@ export default function NewsFeed() {
               onClick={() => setActiveTab("birthday")}
               className={`font-semibold text-[18px] px-5 py-2 rounded-md ${
                 activeTab === "birthday"
-                  ? "bg-gradient-to-r from-[#FEB800] to-[#986E00] text-white"
+                  ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
                   : "bg-transparent"
               }`}
             >
               Today birthday
-            </button>{" "}
+            </button>
             <br />
             <button
               onClick={() => setActiveTab("member")}
               className={`font-semibold text-[18px] px-5 py-2 rounded-md ${
                 activeTab === "member"
-                  ? "bg-gradient-to-r from-[#FEB800] to-[#986E00] text-white"
+                  ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
                   : "bg-transparent"
               }`}
             >
@@ -94,19 +94,21 @@ export default function NewsFeed() {
               onClick={() => setActiveTab("photos")}
               className={`font-semibold text-[18px] px-5 py-2 rounded-md flex items-center gap-1 ${
                 activeTab === "photos"
-                  ? "bg-gradient-to-r from-[#FEB800] to-[#986E00] text-white"
+                  ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
                   : "bg-transparent"
               }`}
             >
               <IoMdPhotos />
               Photos
             </button>
-            <button onClick={() => setActiveTab("latest")}
+            <button
+              onClick={() => setActiveTab("latest")}
               className={`font-semibold text-[18px] px-5 py-2 rounded-md ${
                 activeTab === "latest"
-                  ? "bg-gradient-to-r from-[#FEB800] to-[#986E00] text-white"
+                  ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
                   : "bg-transparent"
-              }`}>
+              }`}
+            >
               Latest everyone
             </button>
           </ul>
@@ -156,7 +158,6 @@ export default function NewsFeed() {
         {activeTab === "member" && <NewMember />}
         {activeTab === "latest" && <LatestEveryone />}
         {activeTab === "online" && <NeearByOnline />}
-        
       </div>
     </div>
   );
