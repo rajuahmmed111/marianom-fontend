@@ -73,7 +73,7 @@ export default function RightSide() {
                     className="rounded-md"
                   />
                 )}
-                <div className="flex gap-5 text-sm text-gray-300">
+                <div className="flex gap-5 text-gray-300">
                   <button className="hover:text-yellow-500 flex items-center gap-2"><MdFavoriteBorder />Favorite</button>
                   <button className="hover:text-yellow-500 flex items-center gap-2"><FaRegCommentDots />Comment</button>
                   <button className="hover:text-yellow-500 flex items-center gap-2"><MdMessage />Message</button>

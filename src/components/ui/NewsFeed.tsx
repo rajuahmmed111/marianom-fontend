@@ -6,6 +6,10 @@ import { CgProfile } from "react-icons/cg";
 import { IoMdPhotos } from "react-icons/io";
 import { RiUserCommunityLine } from "react-icons/ri";
 import RightSide from "./RightSide";
+import Birthday from "./Birthday";
+import NewMember from "./NewMember";
+import LatestEveryone from "./LatestEveryone";
+import NeearByOnline from "./NeearByOnline";
 
 export default function NewsFeed() {
   const [activeTab, setActiveTab] = useState("global");
@@ -56,6 +60,16 @@ export default function NewsFeed() {
               <CgProfile /> People
             </button>
             <button
+              onClick={() => setActiveTab("online")}
+              className={`font-semibold text-[18px] px-5 py-2 rounded-md flex items-center gap-1 ${
+                activeTab === "online"
+                  ? "bg-gradient-to-r from-[#FEB800] to-[#986E00] text-white"
+                  : "bg-transparent"
+              }`}
+            >
+              Near By and Online
+            </button>
+            <button
               onClick={() => setActiveTab("birthday")}
               className={`font-semibold text-[18px] px-5 py-2 rounded-md ${
                 activeTab === "birthday"
@@ -87,7 +101,12 @@ export default function NewsFeed() {
               <IoMdPhotos />
               Photos
             </button>
-            <button className="font-semibold text-[18px]">
+            <button onClick={() => setActiveTab("latest")}
+              className={`font-semibold text-[18px] px-5 py-2 rounded-md ${
+                activeTab === "latest"
+                  ? "bg-gradient-to-r from-[#FEB800] to-[#986E00] text-white"
+                  : "bg-transparent"
+              }`}>
               Latest everyone
             </button>
           </ul>
@@ -133,6 +152,11 @@ export default function NewsFeed() {
 
         {/* Right Content */}
         {activeTab === "global" && <RightSide />}
+        {activeTab === "birthday" && <Birthday />}
+        {activeTab === "member" && <NewMember />}
+        {activeTab === "latest" && <LatestEveryone />}
+        {activeTab === "online" && <NeearByOnline />}
+        
       </div>
     </div>
   );
