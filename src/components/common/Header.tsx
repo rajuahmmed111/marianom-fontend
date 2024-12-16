@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import LogoImg from "@/assets/logo.jpeg";
 import { IoSettingsOutline } from "react-icons/io5";

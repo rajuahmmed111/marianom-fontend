@@ -1,4 +1,7 @@
+import Image from "next/image";
 import React from "react";
+import profileImage from "@/assets/profile.png"
+
 
 export default function UpdateProfileForm() {
   return (
@@ -7,8 +10,8 @@ export default function UpdateProfileForm() {
       {/* Profile Picture */}
       <div className="flex justify-center mb-6">
         <div className="relative">
-          <img
-            src="https://via.placeholder.com/120"
+          <Image
+            src={profileImage}
             alt="Profile"
             className="rounded-full w-32 h-32"
           />

@@ -149,14 +149,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <p>
-                  I'm overloading on sweets today with the three C's: Cupcakes,
-                  Cookies, and Candy. I'm overloading on sweets today with the
-                  three C's: Cupcakes, Cookies, and Candy. I'm overloading on
-                  sweets today with the three C's: Cupcakes, Cookies, and Candy.
-                  I'm overloading on sweets today with the three C's: Cupcakes,
-                  Cookies, and CandyI'm overloading on sweets today with the
-                  three C's: Cupcakes, Cookies, and Candy. I'm overloading on
-                  sweets today with the three C's: Cupcakes, Cookies, and Candy
+                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam voluptatum labore dolorum illum natus accusamus in ullam officiis praesentium ea. Eius blanditiis magnam at quasi, cumque dicta! Fuga quia quos delectus accusamus est laborum consequuntur quas? Eius repellendus numquam libero assumenda adipisci fugiat est deserunt voluptatum vero eum, iste reprehenderit.
                 </p>
                 {index === 2 && (
                   <Image

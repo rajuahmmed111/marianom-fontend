@@ -60,9 +60,9 @@ export default function RightSide() {
                   </div>
                 </div>
                 <p>
-                  I'm overloading on sweets today with the three C's: Cupcakes,
-                  Cookies, and Candy. I'm overloading on sweets today with the
-                  three C's: Cupcakes, Cookies, and Candy.
+                  Im overloading on sweets today with the three Cs: Cupcakes,
+                  Cookies, and Candy. Im overloading on sweets today with the
+                  three Cs: Cupcakes, Cookies, and Candy.
                 </p>
                 {index === 2 && (
                   <Image

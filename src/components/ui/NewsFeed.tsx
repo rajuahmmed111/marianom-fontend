@@ -63,7 +63,7 @@ export default function NewsFeed() {
                   : "bg-transparent"
               }`}
             >
-              Today's birthday
+              Today birthday
             </button>{" "}
             <br />
             <button

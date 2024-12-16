@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { MdSend } from "react-icons/md";
-import { RiSendPlaneFill } from "react-icons/ri";
+
 
 // Sample images and data
 import userImage from "@/assets/profile.png";
