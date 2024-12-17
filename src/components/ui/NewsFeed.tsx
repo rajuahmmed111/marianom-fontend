@@ -80,7 +80,7 @@ export default function NewsFeed() {
 /** Profile Section Component */
 const ProfileSection: React.FC = () => {
   return (
-    <div className="flex flex-col items-center border-b-2 border-[#796943] pb-4">
+    <div className="flex flex-col md:flex-row md:gap-8 items-center border-b-2 border-[#796943] pb-4">
       <Image
         src={ProfileImg.src}
         alt="Profile"
