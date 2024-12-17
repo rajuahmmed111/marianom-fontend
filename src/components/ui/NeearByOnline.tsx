@@ -46,7 +46,7 @@ const NeearByOnline = () => {
           <input
             type="text"
             placeholder="Search"
-            className="py-2 px-4 rounded-lg border border-[#EAECF04D] bg-transparent text-white w-full"
+            className="py-2 px-4 rounded-lg border border-[#EAECF04D] bg-transparent text-white w-full focus:outline-none"
           />
           <button className="py-2 px-3 bg-[#FEB80045] rounded-lg text-white w-full sm:w-auto">
             Search
@@ -67,7 +67,7 @@ const NeearByOnline = () => {
                 height={56}
                 className="rounded-full border-2 border-yellow-500"
               />
-              <span className="absolute bottom-1 right-[70px] md:bottom-1 md:right-[135px] w-4 h-4 bg-green-500 border-2 border-primary rounded-full"></span>
+              <span className="absolute bottom-1 right-[70px] md:bottom-0 md:right-[140px] w-4 h-4 bg-green-500 border-2 border-primary rounded-full"></span>
             </div>
           ))}
         </div>
