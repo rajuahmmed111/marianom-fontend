@@ -5,10 +5,9 @@ import Image from "next/image";
 import { MdFavoriteBorder, MdMessage } from "react-icons/md";
 import { FaRegCommentDots } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
-import profileImage from "@/assets/profile.png"
+import profileImage from "@/assets/profile.png";
 
 const NeearByOnline = () => {
-  // Mock data for online users and people near me
   const onlineUsers = Array(6).fill({
     image: onlineImage,
     name: "User",
@@ -21,8 +20,8 @@ const NeearByOnline = () => {
       appreciation: "16k appreciation",
       recent: true,
       message:
-        "I'm overloading on sweets today with the three C’s: Cupcakes, Cookies, and Candy",
-      images: Array(4).fill(postImage), // Use postImage here
+        "I'm overloading on sweets today with the three C’s: Cupcakes, Cookies, and Candy.",
+      images: Array(4).fill(postImage),
     },
     {
       id: 2,
@@ -30,30 +29,26 @@ const NeearByOnline = () => {
       appreciation: "16k appreciation",
       recent: true,
       message:
-        "I'm overloading on sweets today with the three C’s: Cupcakes, Cookies, and Candy",
-      images: [postImage], // Use postImage for single image
+        "I'm overloading on sweets today with the three C’s: Cupcakes, Cookies, and Candy.",
+      images: [postImage],
     },
   ];
 
   return (
-    <div className="flex-1 bg-primary p-6">
+    <div className="flex-1 bg-primary p-4 md:p-6">
       {/* Header */}
-      <div className="flex justify-between items-center pb-6 mb-6 border-b border-[#796943]">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 mb-6 border-b border-[#796943]">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold text-white mb-3">
-              Near by and online
-            </h1>
-          </div>
-          <p className="text-white">Updates from everyone</p>
+          <h1 className="text-2xl font-semibold text-white">Near by and online</h1>
+          <p className="text-white text-sm">Updates from everyone</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <input
             type="text"
             placeholder="Search"
-            className="py-2 px-4 rounded-lg border border-[#EAECF04D] bg-transparent text-white"
+            className="py-2 px-4 rounded-lg border border-[#EAECF04D] bg-transparent text-white w-full"
           />
-          <button className="py-2 px-3 bg-[#FEB80045] rounded-lg text-white">
+          <button className="py-2 px-3 bg-[#FEB80045] rounded-lg text-white w-full sm:w-auto">
             Search
           </button>
         </div>
@@ -62,15 +57,17 @@ const NeearByOnline = () => {
       {/* Online Users */}
       <div>
         <h2 className="text-lg text-white mb-4 font-semibold">In online</h2>
-        <div className="flex gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
           {onlineUsers.map((user, index) => (
             <div key={index} className="relative">
               <Image
                 src={user.image}
                 alt="Online User"
-                className="w-14 h-14 rounded-full border-2 border-yellow-500"
+                width={56}
+                height={56}
+                className="rounded-full border-2 border-yellow-500"
               />
-              <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-primary rounded-full"></span>
+              <span className="absolute bottom-1 right-[70px] md:bottom-1 md:right-[135px] w-4 h-4 bg-green-500 border-2 border-primary rounded-full"></span>
             </div>
           ))}
         </div>
@@ -78,42 +75,46 @@ const NeearByOnline = () => {
 
       {/* People Near Me */}
       <div className="mt-8">
-        <h2 className="text-lg text-white mb-4 font-semibold">
-          People near me
-        </h2>
+        <h2 className="text-lg text-white mb-4 font-semibold">People near me</h2>
         {posts.map((post) => (
           <div
             key={post.id}
             className="p-4 rounded-lg mb-6"
           >
             {/* Profile Section */}
-            <div className="flex items-center mb-4">
+            <div className="flex flex-wrap items-center mb-4 gap-4">
               <Image
                 src={profileImage}
                 alt="Profile"
-                className="w-20 h-20 rounded-full mr-4"
+                width={80}
+                height={80}
+                className="rounded-full"
               />
               <div>
-                <h3 className="text-white font-medium text-[20px]">
+                <h3 className="text-white font-medium text-[18px] sm:text-[20px]">
                   {post.name}
-                  <span className="ml-2 text-sm cursor-pointer">
+                  <span className="ml-2 text-sm cursor-pointer text-yellow-500">
                     + Follow
                   </span>
                 </h3>
                 <p className="text-gray-300 font-medium">{post.appreciation}</p>
-                <p className="text-gray-300 flex items-center gap-2">
-                <FaRegEdit /> Recent post
+                <p className="text-gray-400 flex items-center gap-2 text-sm">
+                  <FaRegEdit /> Recent post
                 </p>
               </div>
             </div>
 
             {/* Message */}
-            <p className="text-gray-200  text-[20px] mb-5">{post.message}</p>
+            <p className="text-gray-300 text-sm md:text-[18px] mb-5 leading-relaxed">
+              {post.message}
+            </p>
 
             {/* Post Images */}
             <div
               className={`grid gap-4 ${
-                post.images.length > 1 ? "grid-cols-4" : "grid-cols-1"
+                post.images.length > 1
+                  ? "grid-cols-2 sm:grid-cols-4"
+                  : "grid-cols-1"
               }`}
             >
               {post.images.map((img, idx) => (
@@ -121,13 +122,15 @@ const NeearByOnline = () => {
                   key={idx}
                   src={img}
                   alt="Post"
-                  className="rounded-lg object-cover h-[260px]"
+                  width={300}
+                  height={200}
+                  className="rounded-lg object-cover w-full h-auto"
                 />
               ))}
             </div>
 
             {/* Actions */}
-            <div className="flex gap-5  text-[#EAECF0] mt-4">
+            <div className="flex flex-wrap gap-5 text-[#EAECF0] mt-4">
               <button className="hover:text-yellow-500 flex items-center gap-2">
                 <MdFavoriteBorder />
                 Favorite

@@ -9,3 +9,6 @@
   background-color: #efebe2;
   outline: none !important;
 }
+html{
+  overflow-x: hidden;
+}

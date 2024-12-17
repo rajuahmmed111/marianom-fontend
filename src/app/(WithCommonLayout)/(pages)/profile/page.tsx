@@ -19,13 +19,14 @@ import Photos from "@/components/ui/Photos";
 export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTab, setIsTab] = useState("all");
+
   return (
-    <div className="bg-primary min-h-screen text-white p-8 container mt-48">
+    <div className="bg-primary min-h-screen text-white p-4 md:p-8 container mx-auto mt-40 md:mt-48">
       {/* Profile Header */}
-      <div className="bg-secondary rounded-lg p-6 shadow-lg">
-        <div className="flex items-center justify-between">
+      <div className="bg-secondary rounded-lg p-4 md:p-6 shadow-lg">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Profile Info */}
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col md:flex-row items-center gap-6 w-full">
             <Image
               src={ProfileImg}
               alt="Profile Picture"
@@ -34,13 +35,15 @@ export default function ProfilePage() {
               className="rounded-full border-4 border-yellow-500"
             />
             <div>
-              <div className="flex items-center gap-7">
-                <h1 className="text-[32px] font-semibold">Devid Saifur</h1>
-                <button className="text-[18px] font-semibold flex items-center gap-1">
-                  <GoPlus className="text-white text-[18px]" /> Follow
+              <div className="flex flex-wrap items-center gap-4 md:gap-7">
+                <h1 className="text-2xl md:text-[32px] font-semibold">
+                  Devid Saifur
+                </h1>
+                <button className="text-lg md:text-[18px] font-semibold flex items-center gap-1">
+                  <GoPlus className="text-white" /> Follow
                 </button>
               </div>
-              <p className="text-gray-400 text-[18px] font-semibold">
+              <p className="text-gray-400 text-sm md:text-[18px] font-semibold">
                 16k Followers
               </p>
               <div className="flex -space-x-3 mt-2">
@@ -59,10 +62,10 @@ export default function ProfilePage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 w-full md:w-auto">
             <button
               onClick={() => setIsModalOpen(true)}
-              className=" text-white border border-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-yellow-600 hover:border-none"
+              className="text-white border border-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-yellow-600 hover:border-none w-full md:w-auto"
             >
               <FaRegEdit /> Edit
             </button>
@@ -70,21 +73,29 @@ export default function ProfilePage() {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="mt-6  pt-4 flex items-center justify-between">
-          <div className="flex gap-8 text-gray-300">
+        <div className="mt-4 pt-4 flex flex-wrap gap-4 items-center justify-between">
+          <div className="flex gap-4 md:gap-8 text-gray-300 flex-wrap">
             <button
               onClick={() => setIsTab("all")}
-              className={` font-semibold cursor-pointer text-[20px] ${isTab === "all" ? "text-white" : "text-[#807E7E]"}`}
+              className={`font-semibold cursor-pointer text-base md:text-[20px] ${
+                isTab === "all" ? "text-white" : "text-[#807E7E]"
+              }`}
             >
               All
             </button>
             <button
               onClick={() => setIsTab("photos")}
-              className={`cursor-pointer flex items-center gap-2 text-[20px]  ${isTab === "photos" ? "text-white" : "text-[#807E7E]"}`}
+              className={`cursor-pointer flex items-center gap-2 text-base md:text-[20px] ${
+                isTab === "photos" ? "text-white" : "text-[#807E7E]"
+              }`}
             >
               Photos
             </button>
-            <button className={`cursor-pointer flex items-center gap-2 text-[20px] ${isTab === "video" ? "text-white" : "text-[#807E7E]"}`}>
+            <button
+              className={`cursor-pointer flex items-center gap-2 text-base md:text-[20px] ${
+                isTab === "video" ? "text-white" : "text-[#807E7E]"
+              }`}
+            >
               Video
             </button>
           </div>
@@ -97,10 +108,12 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Content Section */}
       {isTab === "all" && (
         <div>
-          <div className="bg-secondary rounded-lg p-6 mt-8 shadow-lg">
-            <div className="flex gap-4 items-center">
+          {/* Post Input */}
+          <div className="bg-secondary rounded-lg p-4 md:p-6 mt-4 md:mt-8 shadow-lg">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center">
               <Image
                 src={ProfileImg}
                 alt="Profile"
@@ -115,16 +128,17 @@ export default function ProfilePage() {
               />
             </div>
             <div className="flex gap-6 mt-4 text-white">
-              <button className="flex items-center gap-2 text-[20px]">
+              <button className="flex items-center gap-2 text-base md:text-[20px]">
                 <MdPhoto /> Photo
               </button>
-              <button className="flex items-center gap-2 text-[20px]">
+              <button className="flex items-center gap-2 text-base md:text-[20px]">
                 <MdOutlineVideoLibrary /> Video
               </button>
             </div>
           </div>
 
-          <div className="space-y-6 mt-8">
+          {/* Posts */}
+          <div className="space-y-6 mt-4 md:mt-8">
             {[...Array(3)].map((_, index) => (
               <div
                 key={index}
@@ -134,12 +148,12 @@ export default function ProfilePage() {
                   <Image
                     src={ProfileImg.src}
                     alt="User"
-                    width={50}
-                    height={50}
+                    width={40}
+                    height={40}
                     className="rounded-full"
                   />
                   <div>
-                    <p className="font-semibold mb-1 text-[20px]">
+                    <p className="font-semibold text-base md:text-[20px]">
                       GainerSheWrote
                     </p>
                     <p className="text-sm text-gray-400 flex items-center gap-2">
@@ -148,8 +162,8 @@ export default function ProfilePage() {
                     </p>
                   </div>
                 </div>
-                <p>
-                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam voluptatum labore dolorum illum natus accusamus in ullam officiis praesentium ea. Eius blanditiis magnam at quasi, cumque dicta! Fuga quia quos delectus accusamus est laborum consequuntur quas? Eius repellendus numquam libero assumenda adipisci fugiat est deserunt voluptatum vero eum, iste reprehenderit.
+                <p className="text-sm md:text-base leading-relaxed">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 </p>
                 {index === 2 && (
                   <Image
@@ -157,15 +171,15 @@ export default function ProfilePage() {
                     alt="Post Image"
                     width={600}
                     height={300}
-                    className="rounded-md"
+                    className="rounded-md w-full h-auto"
                   />
                 )}
                 <div className="flex gap-5 text-sm text-gray-300">
-                  <button className="hover:text-yellow-500 flex items-center gap-2 text-[18px]">
+                  <button className="hover:text-yellow-500 flex items-center gap-2 text-base">
                     <MdFavoriteBorder />
                     Favorite
                   </button>
-                  <button className="hover:text-yellow-500 flex items-center gap-2 text-[18px]">
+                  <button className="hover:text-yellow-500 flex items-center gap-2 text-base">
                     <FaRegCommentDots />
                     Comment
                   </button>
