@@ -28,7 +28,7 @@ const Header = () => {
               alt="Plumppr Logo"
               width={150}
               height={50}
-              className="h-auto md:w-auto w-[150px]"
+              className="h-auto md:w-[240px] w-[150px]"
             />
           </Link>
 

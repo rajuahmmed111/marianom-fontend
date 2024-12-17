@@ -41,7 +41,7 @@ export default function NewsFeed() {
 
         {/* Drawer Sidebar for Mobile */}
         <aside
-          className={`fixed top-48 left-0 h-full w-[100%]  bg-secondary text-white p-5 z-50 transform ${
+          className={`fixed top-48 left-0 h-full w-[100%] bg-secondary text-white p-5 z-50 transform ${
             isDrawerOpen ? "translate-x-0" : "-translate-x-full"
           } transition-transform duration-300 md:hidden`}
         >
@@ -106,34 +106,47 @@ interface SidebarNavProps {
 
 const SidebarNav: React.FC<SidebarNavProps> = ({ activeTab, setActiveTab }) => {
   const tabs = [
-    { name: "Global News feed", key: "global" },
-    { name: "People", key: "people", icon: <CgProfile /> },
-    { name: "Near By and Online", key: "online" },
-    { name: "Today birthday", key: "birthday" },
-    { name: "New member", key: "member" },
-    { name: "Photos", key: "photos", icon: <IoMdPhotos /> },
-    { name: "Latest everyone", key: "latest" },
+    { name: "Global News feed", key: "global", button: true },
+    { name: "People", key: "people", button: false, icon: <CgProfile /> },
+    { name: "Near By and Online", key: "online", button: true },
+    { name: "Today birthday", key: "birthday", button: true },
+    { name: "New member", key: "member", button: true },
+    { name: "Photos", key: "photos", button: false, icon: <IoMdPhotos /> },
+    { name: "Latest everyone", key: "latest", button: true },
   ];
 
   return (
     <ul className="space-y-4 text-sm">
-      <button className="font-semibold text-[18px] flex items-center gap-1">
+      {/* Static Community Section */}
+      <button className="font-semibold text-[18px] flex items-center gap-1 cursor-not-allowed">
         <RiUserCommunityLine />
         Community
       </button>
-      {tabs.map((tab) => (
-        <button
-          key={tab.key}
-          onClick={() => setActiveTab(tab.key)}
-          className={`font-semibold text-[18px] px-5 py-2 rounded-md flex items-center gap-2 ${
-            activeTab === tab.key
-              ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
-              : "bg-transparent"
-          }`}
-        >
-          {tab.icon} {tab.name}
-        </button>
-      ))}
+
+      {tabs.map((tab) =>
+        tab.button ? (
+          // Render clickable buttons
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`font-normal text-base px-5 py-2 rounded-md flex items-center gap-2 ${
+              activeTab === tab.key
+                ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
+                : "bg-transparent"
+            }`}
+          >
+            {tab.icon} {tab.name}
+          </button>
+        ) : (
+          // Render static content
+          <div
+            key={tab.key}
+            className="font-semibold text-[18px] px-5 py-2  flex items-center gap-2 text-white cursor-not-allowed"
+          >
+            {tab.icon} {tab.name}
+          </div>
+        )
+      )}
     </ul>
   );
 };

@@ -41,10 +41,10 @@ export default function RootLayout({
           backgroundSize: "cover", 
           backgroundRepeat: "repeat",
           backgroundColor: "#594614", 
-          backgroundBlendMode: "multiply",
           minHeight: "100vh",
           backgroundPosition:"center",
           backgroundAttachment: "fixed",
+
         }}
          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

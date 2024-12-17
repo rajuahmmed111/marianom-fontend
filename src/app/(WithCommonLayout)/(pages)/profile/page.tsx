@@ -43,7 +43,7 @@ export default function ProfilePage() {
                   <GoPlus className="text-white" /> Follow
                 </button>
               </div>
-              <p className="text-gray-400 text-sm md:text-[18px] font-semibold">
+              <p className="text-[#98A2B3] text-sm md:text-[20px] font-medium mt-1 mb-4">
                 16k Followers
               </p>
               <div className="flex -space-x-3 mt-2">
@@ -124,14 +124,14 @@ export default function ProfilePage() {
               <input
                 type="text"
                 placeholder="What's on your mind?"
-                className="w-full bg-transparent border-b border-border-primary p-2 focus:outline-none placeholder-white"
+                className="w-full bg-transparent border-b border-border-primary p-2 pb-8 focus:outline-none placeholder-white"
               />
             </div>
             <div className="flex gap-6 mt-4 text-white">
-              <button className="flex items-center gap-2 text-base md:text-[20px]">
+              <button className="flex items-center gap-2 text-base md:text-[14px] font-medium">
                 <MdPhoto /> Photo
               </button>
-              <button className="flex items-center gap-2 text-base md:text-[20px]">
+              <button className="flex items-center gap-2 text-base md:text-[14px] font-medium">
                 <MdOutlineVideoLibrary /> Video
               </button>
             </div>
