@@ -19,7 +19,7 @@ export default function Notification() {
           <input
             type="text"
             placeholder="Search"
-            className="py-2 px-4 rounded-lg border border-[#EAECF04D] bg-transparent text-white w-full sm:w-auto"
+            className="py-2 px-4 rounded-lg border border-[#EAECF04D] bg-transparent text-white w-full sm:w-auto focus:outline-none"
           />
           <button className="py-2 px-4 bg-[#FEB80045] rounded-lg text-white w-full sm:w-auto">
             Search
