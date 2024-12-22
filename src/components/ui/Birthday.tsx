@@ -83,9 +83,7 @@ export default function Birthday() {
                 className="flex items-center justify-between py-3 px-4 mb-3 border border-white rounded-xl text-white cursor-pointer"
                 onClick={() => openModal(person.name)}
               >
-                <button
-                  className="bg-transparent text-white font-medium py-1  rounded transition duration-200 text-[14px] text-base"
-                >
+                <button className="bg-transparent text-white font-medium py-1  rounded transition duration-200 text-[14px] text-base">
                   Wish {person.name} a Happy Birthday
                 </button>
                 <Image
@@ -129,19 +127,6 @@ export default function Birthday() {
               Wish your friends a happy birthday!
             </p>
 
-            {/* Display the selected image or uploaded image */}
-            {imagePreview && (
-              <div className="mb-6">
-                <Image
-                  src={imagePreview}
-                  alt="Uploaded Image"
-                  className="w-[30%] mx-auto h-auto rounded-lg"
-                  width={50}
-                  height={50}
-                />
-              </div>
-            )}
-
             {/* Image Upload Section */}
             <div className="relative mb-4">
               <input
@@ -159,6 +144,19 @@ export default function Birthday() {
                 placeholder={`Write on ${selectedName}'s timeline`}
                 className="w-full p-3 rounded-lg bg-transparent text-white border border-white placeholder:text-white pr-16 h-[150px] md:h-[200px]"
               ></textarea>
+
+              {/* Display the selected image or uploaded image */}
+              {imagePreview && (
+                <div className="mb-6">
+                  <Image
+                    src={imagePreview}
+                    alt="Uploaded Image"
+                    className="w-[30%] mx-auto h-auto rounded-lg"
+                    width={50}
+                    height={50}
+                  />
+                </div>
+              )}
 
               {/* Post Button */}
               <div className="mt-6 text-center">

@@ -16,6 +16,7 @@ import Modal from "@/components/ui/Modal";
 import UpdateProfileForm from "@/components/ui/UpdateProfileForm";
 import Photos from "@/components/ui/Photos";
 import { BsFillSendFill } from "react-icons/bs";
+import Link from "next/link";
 
 export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -119,10 +120,12 @@ export default function ProfilePage() {
             </button>
           </div>
           <div>
-            <button className="bg-transparent flex items-center gap-2 px-4 py-2">
-              <LuMessageSquareMore />
-              Message
-            </button>
+            <Link href="/message">
+              <button className="bg-transparent flex items-center gap-2 px-4 py-2">
+                <LuMessageSquareMore />
+                Message
+              </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -189,6 +192,8 @@ export default function ProfilePage() {
                           src={URL.createObjectURL(image)}
                           alt="Uploaded Preview"
                           className="mx-1 my-1 h-auto rounded-md"
+                          width={100}
+                          height={100}
                         />
                       </div>
                     ))}
@@ -198,13 +203,13 @@ export default function ProfilePage() {
               {videos.length > 0 && (
                 <div className="mt-4 w-1/2">
                   <h3 className="font-semibold text-lg mb-2">Videos:</h3>
-                  <div className="flex">
+                  <div className="flex gap-2">
                     {videos.map((video, index) => (
                       <div key={index} className="relative">
                         <video
                           src={URL.createObjectURL(video)}
                           controls
-                          className="w-[98%] h-auto rounded-md"
+                          className="w-auto h-[200px] rounded-md"
                         ></video>
                       </div>
                     ))}
