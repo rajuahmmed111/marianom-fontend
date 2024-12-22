@@ -167,7 +167,7 @@ export default function Birthday() {
                     closeModal();
                   }}
                 >
-                  Post
+                  Post 
                 </button>
               </div>
 
