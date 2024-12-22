@@ -11,7 +11,7 @@ import { MdClose, MdMenu } from "react-icons/md";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const route = usePathname();
-  if (/^\/(registers|login)/.test(route)) return;
+  if (/^\/(registers|login|forgetPassword|verifyCode|resetPassword)/.test(route)) return;
 
   const toggleMenu: React.MouseEventHandler<HTMLButtonElement> = () => {
     setIsMenuOpen((prevState) => !prevState);

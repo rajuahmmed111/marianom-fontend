@@ -15,10 +15,29 @@ import { GoPlus } from "react-icons/go";
 import Modal from "@/components/ui/Modal";
 import UpdateProfileForm from "@/components/ui/UpdateProfileForm";
 import Photos from "@/components/ui/Photos";
+import { BsFillSendFill } from "react-icons/bs";
 
 export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTab, setIsTab] = useState("all");
+  // Explicitly define the types for images and videos
+  const [images, setImages] = useState<File[]>([]);
+  const [videos, setVideos] = useState<File[]>([]);
+  // const [postContent, setPostContent] = useState<string>("");
+
+  // Handle Photo Upload
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+    setImages((prev) => [...prev, ...imageFiles]);
+  };
+
+  // Handle Video Upload
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    const videoFiles = files.filter((file) => file.type.startsWith("video/"));
+    setVideos((prev) => [...prev, ...videoFiles]);
+  };
 
   return (
     <div className="bg-primary min-h-screen text-white p-4 md:p-8 container mx-auto mt-40 md:mt-48">
@@ -126,14 +145,72 @@ export default function ProfilePage() {
                 placeholder="What's on your mind?"
                 className="w-full bg-transparent border-b border-border-primary p-2 pb-8 focus:outline-none placeholder-white"
               />
+              <button
+                className="bg-yellow-500 text-white p-2 rounded-full hover:bg-yellow-600 transition duration-300 shadow-lg"
+                // onClick={() => console.log("Post content:", postContent)}
+              >
+                <BsFillSendFill size={20} />
+              </button>
             </div>
             <div className="flex gap-6 mt-4 text-white">
-              <button className="flex items-center gap-2 text-base md:text-[14px] font-medium">
-                <MdPhoto /> Photo
-              </button>
-              <button className="flex items-center gap-2 text-base md:text-[14px] font-medium">
-                <MdOutlineVideoLibrary /> Video
-              </button>
+              <label className="flex items-center gap-2 cursor-pointer text-base md:text-[14px] font-medium">
+                <MdPhoto />
+                Photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handlePhotoUpload}
+                />
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer text-base md:text-[14px] font-medium">
+                <MdOutlineVideoLibrary />
+                Video
+                <input
+                  type="file"
+                  accept="video/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleVideoUpload}
+                />
+              </label>
+            </div>
+
+            {/* Media Preview Section */}
+            <div className="mt-4 md:mt-8">
+              {images.length > 0 && (
+                <div className="w-1/2">
+                  <h3 className="font-semibold text-lg mb-2">Images:</h3>
+                  <div className="flex md:flex-row flex-col flex-wrap">
+                    {images.map((image, index) => (
+                      <div key={index} className="relative">
+                        <Image
+                          src={URL.createObjectURL(image)}
+                          alt="Uploaded Preview"
+                          className="mx-1 my-1 h-auto rounded-md"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {videos.length > 0 && (
+                <div className="mt-4 w-1/2">
+                  <h3 className="font-semibold text-lg mb-2">Videos:</h3>
+                  <div className="flex">
+                    {videos.map((video, index) => (
+                      <div key={index} className="relative">
+                        <video
+                          src={URL.createObjectURL(video)}
+                          controls
+                          className="w-[98%] h-auto rounded-md"
+                        ></video>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

@@ -1,17 +1,36 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import onlineImage from "@/assets/onlineImage.png";
 import postImage from "@/assets/news.jpeg";
 import Image from "next/image";
 import { MdFavoriteBorder, MdMessage } from "react-icons/md";
-import { FaRegCommentDots } from "react-icons/fa6";
+import { FaPaperPlane, FaRegCommentDots } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import profileImage from "@/assets/profile.png";
+import Link from "next/link";
 
 const NeearByOnline = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [comment, setComment] = useState("");
+
   const onlineUsers = Array(6).fill({
     image: onlineImage,
     name: "User",
   });
+
+  const handleCommentClick = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setComment("");
+  };
+
+  const handleSendComment = () => {
+    console.log("Comment Sent:", comment);
+    handleCloseModal();
+  };
 
   const posts = [
     {
@@ -39,7 +58,9 @@ const NeearByOnline = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 mb-6 border-b border-[#796943]">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Near by and online</h1>
+          <h1 className="text-2xl font-semibold text-white">
+            Near by and online
+          </h1>
           <p className="text-white text-sm">Updates from everyone</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -57,7 +78,7 @@ const NeearByOnline = () => {
       {/* Online Users */}
       <div>
         <h2 className="text-lg text-white mb-4 font-semibold">In online</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+        <div className="flex gap-7 md:flex-row flex-col flex-wrap">
           {onlineUsers.map((user, index) => (
             <div key={index} className="relative">
               <Image
@@ -67,7 +88,7 @@ const NeearByOnline = () => {
                 height={56}
                 className="rounded-full border-2 border-yellow-500"
               />
-              <span className="absolute bottom-1 right-[70px] md:bottom-0 md:right-[140px] w-4 h-4 bg-green-500 border-2 border-primary rounded-full"></span>
+              <span className="absolute bottom-1 right-[70px] md:bottom-0 md:right-[5px] w-4 h-4 bg-green-500 border-2 border-primary rounded-full"></span>
             </div>
           ))}
         </div>
@@ -75,12 +96,11 @@ const NeearByOnline = () => {
 
       {/* People Near Me */}
       <div className="mt-8">
-        <h2 className="text-lg text-white mb-4 font-semibold">People near me</h2>
+        <h2 className="text-lg text-white mb-4 font-semibold">
+          People near me
+        </h2>
         {posts.map((post) => (
-          <div
-            key={post.id}
-            className="p-4 rounded-lg mb-6"
-          >
+          <div key={post.id} className="p-4 rounded-lg mb-6">
             {/* Profile Section */}
             <div className="flex flex-wrap items-center mb-4 gap-4">
               <Image
@@ -135,18 +155,52 @@ const NeearByOnline = () => {
                 <MdFavoriteBorder />
                 Favorite
               </button>
-              <button className="hover:text-yellow-500 flex items-center gap-2">
+              <button
+                onClick={handleCommentClick}
+                className="hover:text-yellow-500 flex items-center gap-2"
+              >
                 <FaRegCommentDots />
                 Comment
               </button>
-              <button className="hover:text-yellow-500 flex items-center gap-2">
-                <MdMessage />
-                Message
-              </button>
+              <Link href="/message">
+                <button className="hover:text-yellow-500 flex items-center gap-2">
+                  <MdMessage />
+                  Message
+                </button>
+              </Link>
             </div>
           </div>
         ))}
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-[#1F1F1F] rounded-lg shadow-md p-6 w-[90%] max-w-md text-white">
+            <h2 className="text-lg font-semibold mb-4">Write a Comment</h2>
+            <div className="flex items-center gap-3">
+              <input
+                type="text"
+                placeholder="Write something about the post..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-700 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              />
+              <button
+                onClick={handleSendComment}
+                className="p-3 bg-yellow-500 rounded-lg text-white hover:bg-yellow-600"
+              >
+                <FaPaperPlane size={20} />
+              </button>
+            </div>
+            <button
+              onClick={handleCloseModal}
+              className="mt-4 text-sm text-gray-400 hover:underline"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

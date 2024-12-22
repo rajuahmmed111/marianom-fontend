@@ -25,39 +25,48 @@ export default function UpdateProfileForm() {
 
       {/* Form Fields */}
       <form className="space-y-6">
-        {/* Owner Name */}
-        <div>
-          <h1 className="text-lg md:text-xl font-semibold mb-2">
-            Change Owner Name
-          </h1>
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block mb-1 text-sm md:text-base">First Name</label>
-              <input
-                type="text"
-                placeholder="Saifur"
-                className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block mb-1 text-sm md:text-base">Last Name</label>
-              <input
-                type="text"
-                placeholder="Rah***"
-                className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
-              />
-            </div>
+        {/* First Four Fields in Two-Column Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* User Name */}
+          <div>
+            <label className="block mb-1 text-sm md:text-base">User Name</label>
+            <input
+              type="text"
+              placeholder="Enter your username"
+              className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
+            />
           </div>
-        </div>
 
-        {/* Email Field */}
-        <div>
-          <label className="block mb-1 text-sm md:text-base">Email Address</label>
-          <input
-            type="email"
-            placeholder="abcdadf@gmail.com"
-            className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
-          />
+          {/* Date of Birth */}
+          <div>
+            <label className="block mb-1 text-sm md:text-base">Date of Birth</label>
+            <input
+              type="date"
+              className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
+            />
+          </div>
+
+          {/* Current Location */}
+          <div>
+            <label className="block mb-1 text-sm md:text-base">Current Location</label>
+            <input
+              type="text"
+              placeholder="Enter your location"
+              className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
+            />
+          </div>
+
+          {/* Identifier Dropdown */}
+          <div>
+            <label className="block mb-1 text-sm md:text-base">Identifier</label>
+            <select
+              className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
+            >
+              <option value="gainer">Gainer</option>
+              <option value="feeder">Feeder/ encourage</option>
+              <option value="muscle_gainer">Muscle gainer</option>
+            </select>
+          </div>
         </div>
 
         {/* Change Password Section */}
@@ -65,27 +74,13 @@ export default function UpdateProfileForm() {
           <h1 className="text-lg md:text-xl font-semibold mb-2">
             Change Password
           </h1>
-          <div className="space-y-4">
-            <div>
-              <label className="block mb-1 text-sm md:text-base">
-                Current Password
-              </label>
-              <input
-                type="password"
-                placeholder="••••••••••"
-                className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block mb-1 text-sm md:text-base">
-                New Password
-              </label>
-              <input
-                type="password"
-                placeholder="••••••••••"
-                className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
-              />
-            </div>
+          <div>
+            <label className="block mb-1 text-sm md:text-base">New Password</label>
+            <input
+              type="password"
+              placeholder="••••••••••"
+              className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
+            />
           </div>
         </div>
 

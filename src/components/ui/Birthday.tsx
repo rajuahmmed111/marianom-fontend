@@ -84,7 +84,7 @@ export default function Birthday() {
                 onClick={() => openModal(person.name)}
               >
                 <button
-                  className="bg-transparent text-white font-medium py-1 px-3 rounded transition duration-200 text-[14px] sm:text-base"
+                  className="bg-transparent text-white font-medium py-1  rounded transition duration-200 text-[14px] text-base"
                 >
                   Wish {person.name} a Happy Birthday
                 </button>
@@ -135,7 +135,9 @@ export default function Birthday() {
                 <Image
                   src={imagePreview}
                   alt="Uploaded Image"
-                  className="w-full h-auto rounded-lg"
+                  className="w-[30%] mx-auto h-auto rounded-lg"
+                  width={50}
+                  height={50}
                 />
               </div>
             )}
@@ -157,6 +159,19 @@ export default function Birthday() {
                 placeholder={`Write on ${selectedName}'s timeline`}
                 className="w-full p-3 rounded-lg bg-transparent text-white border border-white placeholder:text-white pr-16 h-[150px] md:h-[200px]"
               ></textarea>
+
+              {/* Post Button */}
+              <div className="mt-6 text-center">
+                <button
+                  className="bg-yellow-500 w-[60%] text-white py-2 px-6 rounded-lg font-bold text-sm md:text-base transition duration-300 hover:bg-yellow-600 shadow-lg"
+                  onClick={() => {
+                    console.log("Post content submitted!");
+                    closeModal();
+                  }}
+                >
+                  Post
+                </button>
+              </div>
 
               <div
                 className="absolute right-4 top-4 cursor-pointer"

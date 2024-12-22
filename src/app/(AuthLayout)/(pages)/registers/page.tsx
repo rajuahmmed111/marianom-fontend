@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import LogoImg from "@/assets/logo.jpeg"; 
-import { FaCalendarAlt, FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
+import { FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
 import Background from "@/assets/background/authbg.jpeg";
 // import AuthLayout from "../../layouts/AuthLayout";
 
@@ -80,7 +80,7 @@ export default function RegisterPage() {
               type="date"
               className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 text-white placeholder-gray-300 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
             />
-            <FaCalendarAlt className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400" />
+            {/* <FaCalendarAlt className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400" /> */}
           </div>
 
         

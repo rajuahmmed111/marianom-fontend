@@ -141,7 +141,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ activeTab, setActiveTab }) => {
           // Render static content
           <div
             key={tab.key}
-            className="font-semibold text-[18px] px-5 py-2  flex items-center gap-2 text-white cursor-not-allowed"
+            className="font-semibold text-[18px]  py-2  flex items-center gap-2 text-white cursor-not-allowed"
           >
             {tab.icon} {tab.name}
           </div>
