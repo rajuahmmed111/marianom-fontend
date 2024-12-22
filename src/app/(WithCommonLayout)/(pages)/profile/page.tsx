@@ -18,6 +18,7 @@ import Photos from "@/components/ui/Photos";
 import { BsFillSendFill } from "react-icons/bs";
 import Link from "next/link";
 import { IoCloseCircle } from "react-icons/io5";
+import { RxCross2 } from "react-icons/rx";
 
 export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -208,9 +209,9 @@ export default function ProfilePage() {
                         />
                         <button
                           onClick={() => handleRemoveImage(index)}
-                          className="absolute top-0 right-0"
+                          className="absolute -top-1 -right-1 bg-white rounded-full"
                         >
-                          <IoCloseCircle className="text-red-700" size={24} />
+                          <RxCross2  className="text-black" size={22} />
                          
                         </button>
                       </div>
@@ -231,9 +232,10 @@ export default function ProfilePage() {
                         ></video>
                         <button
                           onClick={() => handleRemoveVideo(index)}
-                          className="absolute top-0 right-0"
+                          className="absolute -top-1 -right-1 bg-white rounded-full"
                         >
-                          <IoCloseCircle className="text-red-700" size={24} />
+                        <RxCross2  className="text-black" size={22} />
+                         
                         </button>
                       </div>
                     ))}
