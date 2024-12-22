@@ -17,6 +17,7 @@ import UpdateProfileForm from "@/components/ui/UpdateProfileForm";
 import Photos from "@/components/ui/Photos";
 import { BsFillSendFill } from "react-icons/bs";
 import Link from "next/link";
+import { IoCloseCircle } from "react-icons/io5";
 
 export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,6 +40,16 @@ export default function ProfilePage() {
     const videoFiles = files.filter((file) => file.type.startsWith("video/"));
     setVideos((prev) => [...prev, ...videoFiles]);
   };
+
+    // Handle Remove Image
+    const handleRemoveImage = (index: number) => {
+      setImages((prev) => prev.filter((_, i) => i !== index));
+    };
+  
+    // Handle Remove Video
+    const handleRemoveVideo = (index: number) => {
+      setVideos((prev) => prev.filter((_, i) => i !== index));
+    };
 
   return (
     <div className="bg-primary min-h-screen text-white p-4 md:p-8 container mx-auto mt-40 md:mt-48">
@@ -195,6 +206,13 @@ export default function ProfilePage() {
                           width={100}
                           height={100}
                         />
+                        <button
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-0 right-0"
+                        >
+                          <IoCloseCircle className="text-red-700" size={24} />
+                         
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -211,6 +229,12 @@ export default function ProfilePage() {
                           controls
                           className="w-auto h-[200px] rounded-md"
                         ></video>
+                        <button
+                          onClick={() => handleRemoveVideo(index)}
+                          className="absolute top-0 right-0"
+                        >
+                          <IoCloseCircle className="text-red-700" size={24} />
+                        </button>
                       </div>
                     ))}
                   </div>
