@@ -5,19 +5,24 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import AuthLayout from "@/app/(AuthLayout)/layouts/AuthLayout";
 import Background from "@/assets/background/authbg.jpeg";
 
-
 export default function LoginPage() {
   return (
-    <div className="flex justify-center items-center min-h-screen" 
-    style={{
-      backgroundImage: `url(${Background.src})`,
-      backgroundSize: "cover",
-      backgroundPosition: "",
-      backgroundRepeat: "no-repeat",
-      // minHeight: "100vh",
-    }}
-    >
-      <div className=" bg-[#0000003D] backdrop:blur-[24px] shadow-md rounded-lg p-8 max-w-xl w-full">
+    <div className="relative flex justify-center items-center min-h-screen">
+      {/* Background Image with Overlay */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(${Background.src})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      </div>
+
+      {/* Login Card */}
+      <div className="relative z-10 bg-[#0000003D] backdrop-blur-[24px] shadow-md rounded-lg p-8 max-w-xl w-full">
         <div className="flex items-center justify-center pb-8">
           <Image
             src={LogoImg.src}
@@ -35,7 +40,7 @@ export default function LoginPage() {
             <input
               type="email"
               placeholder="Enter your email"
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              className="w-full px-4 py-2 border rounded-md bg-transparent focus:ring-2 focus:ring-yellow-500 focus:outline-none text-white"
             />
           </div>
 
@@ -46,7 +51,7 @@ export default function LoginPage() {
             <input
               type="password"
               placeholder="Enter your password"
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              className="w-full px-4 py-2 border rounded-md bg-transparent focus:ring-2 focus:ring-yellow-500 focus:outline-none text-white"
             />
           </div>
 
@@ -81,7 +86,8 @@ export default function LoginPage() {
     </div>
   );
 }
+
 // Attach AuthLayout to this page
 LoginPage.getLayout = function getLayout(page: React.ReactNode) {
-    return <AuthLayout>{page}</AuthLayout>;
-  };
+  return <AuthLayout>{page}</AuthLayout>;
+};
