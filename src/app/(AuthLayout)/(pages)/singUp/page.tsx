@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import LogoImg from "@/assets/logo.jpeg";
@@ -5,6 +6,19 @@ import { FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
 import Background from "@/assets/background/authbg.jpeg";
 
 export default function RegisterPage() {
+  
+  const [formData, setFormData] = React.useState({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    userName: "",
+    dateOfBirth: "",
+    location: "",
+    identity: [] as string[],
+    agree: false,
+  });
+
   return (
     <div
       className="relative flex justify-center items-center min-h-screen"
@@ -59,22 +73,26 @@ export default function RegisterPage() {
           </div>
 
           <div className="flex items-center gap-3">
-          <div>
-            <label className="block text-sm font-medium mb-1">First name</label>
-            <input
-              type="text"
-              placeholder="Enter your first name"
-              className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Last name</label>
-            <input
-              type="text"
-              placeholder="Enter your last name"
-              className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                First name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your first name"
+                className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Last name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your last name"
+                className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              />
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">User name</label>

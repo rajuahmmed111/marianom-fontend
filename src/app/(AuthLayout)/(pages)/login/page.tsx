@@ -4,6 +4,7 @@ import LogoImg from "@/assets/logo.jpeg";
 import { FaArrowRightLong } from "react-icons/fa6";
 import AuthLayout from "@/app/(AuthLayout)/layouts/AuthLayout";
 import Background from "@/assets/background/authbg.jpeg";
+import Link from "next/link";
 
 export default function LoginPage() {
   return (
@@ -63,9 +64,9 @@ export default function LoginPage() {
               />
               <span className="text-white">Remember Me</span>
             </label>
-            <a href="#" className="text-red-500 hover:underline">
+            <Link href="/forgetPassword" className="text-red-500 hover:underline">
               Forgot Password?
-            </a>
+            </Link>
           </div>
 
           <button
@@ -78,9 +79,9 @@ export default function LoginPage() {
 
         <p className="text-sm text-center text-white mt-6">
           If you are new here then{" "}
-          <a href="#" className="text-yellow-500 font-medium hover:underline">
-            register
-          </a>
+          <Link href="/singUp" className="text-yellow-500 font-medium hover:underline">
+            SingUp
+          </Link>
         </p>
       </div>
     </div>
