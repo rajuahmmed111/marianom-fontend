@@ -17,7 +17,6 @@ import UpdateProfileForm from "@/components/ui/UpdateProfileForm";
 import Photos from "@/components/ui/Photos";
 import { BsFillSendFill } from "react-icons/bs";
 import Link from "next/link";
-import { IoCloseCircle } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 
 export default function ProfilePage() {
@@ -26,7 +25,7 @@ export default function ProfilePage() {
   // Explicitly define the types for images and videos
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
-  // const [postContent, setPostContent] = useState<string>("");
+  
 
   // Handle Photo Upload
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,7 +196,7 @@ export default function ProfilePage() {
               {images.length > 0 && (
                 <div className="w-1/2">
                   <h3 className="font-semibold text-lg mb-2">Images:</h3>
-                  <div className="flex md:flex-row flex-col flex-wrap">
+                  <div className="flex md:flex-row flex-col flex-wrap gap-2">
                     {images.map((image, index) => (
                       <div key={index} className="relative">
                         <Image
@@ -209,9 +208,9 @@ export default function ProfilePage() {
                         />
                         <button
                           onClick={() => handleRemoveImage(index)}
-                          className="absolute -top-1 -right-1 bg-white rounded-full"
+                          className="absolute -top-1 -right-1 bg-white rounded-full p-1 z-30"
                         >
-                          <RxCross2  className="text-black" size={22} />
+                          <RxCross2  className="text-black" size={16} />
                          
                         </button>
                       </div>
@@ -232,9 +231,9 @@ export default function ProfilePage() {
                         ></video>
                         <button
                           onClick={() => handleRemoveVideo(index)}
-                          className="absolute -top-1 -right-1 bg-white rounded-full"
+                          className="absolute -top-1 -right-1 bg-white rounded-full p-1 z-30"
                         >
-                        <RxCross2  className="text-black" size={22} />
+                        <RxCross2  className="text-black" size={16} />
                          
                         </button>
                       </div>
