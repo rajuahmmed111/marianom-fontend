@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
-import Background from "@/assets/background/bg.png";
-import React from "react";
-import Header from "@/components/common/Header";
-
+import type { Metadata } from 'next';
+import localFont from 'next/font/local';
+import './globals.css';
+import Background from '@/assets/background/bg.png';
+import React from 'react';
+import Header from '@/components/common/Header';
+import ReduxProvider from '@/redux/api/provider/ReduxProvider';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -40,37 +40,27 @@ export default function RootLayout({
       <body
         style={{
           backgroundImage: `url(${Background.src})`,
-          backgroundSize: "cover", 
-          backgroundRepeat: "repeat",
-          backgroundColor: "#594614", 
-          minHeight: "100vh",
-          backgroundPosition:"center",
-          backgroundAttachment: "fixed",
-
+          backgroundSize: 'cover',
+          backgroundRepeat: 'repeat',
+          backgroundColor: '#594614',
+          minHeight: '100vh',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
         }}
-         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        
-      
-        <div className="">
-         
-          <Header/>
-          
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <div className=''>
+          <Header />
         </div>
         <div className='md:px-5'>
-          {/* <ReduxProvider> */}
-          {!isLogin ? (
-            <div className="md:rounded-lg text-text">
-              {children}
-            </div>
-          ) : (
-            <>{children}</>
-          )}
-          {/* </ReduxProvider> */}
+          <ReduxProvider>
+            {!isLogin ? (
+              <div className='md:rounded-lg text-text'>{children}</div>
+            ) : (
+              <>{children}</>
+            )}
+          </ReduxProvider>
         </div>
-        <div className="md:container">
-         
-        </div>
+        <div className='md:container'></div>
       </body>
     </html>
   );
