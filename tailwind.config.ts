@@ -13,14 +13,15 @@ export default {
         ubuntu: ["Ubuntu", "sans-serif"], // Define Ubuntu font
       },
       colors: {
-        primary: "#4F4B46",
-        "primary-green": "#8B9B3E",
+        primary: "#483C19",
+        "primary-gray": "#6C5E3A",
         "secondary-green": "#C3CD99",
         "secondary-blue": "#5887FF",
         "dark-gray": "#EEEEEE",
-        secondary: "#E6E3DB",
+        secondary: "#58481F",
         accent: "#6F675D",
         link: "#7a6e56",
+        "border-primary": "#706341",
         "hover-blue": "#5d8fb4",
         text: {
           DEFAULT: "#333333",

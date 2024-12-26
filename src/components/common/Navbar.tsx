@@ -2,7 +2,6 @@ import Link from "next/link";
 import React from "react";
 import Logo from "../ui/logo";
 import { TbBook } from "react-icons/tb";
-// import { GiFeather } from "react-icons/gi";
 import { FaFeatherAlt } from "react-icons/fa";
 
 const Navbar = () => {

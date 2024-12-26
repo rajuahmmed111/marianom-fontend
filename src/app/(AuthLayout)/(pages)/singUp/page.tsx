@@ -1,25 +1,38 @@
+"use client";
 import React from "react";
 import Image from "next/image";
-import LogoImg from "@/assets/logo.jpeg"; 
-import { FaCalendarAlt, FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
+import LogoImg from "@/assets/logo.jpeg";
+import { FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
 import Background from "@/assets/background/authbg.jpeg";
-// import AuthLayout from "../../layouts/AuthLayout";
 
 export default function RegisterPage() {
+  
+  const [formData, setFormData] = React.useState({
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    userName: "",
+    dateOfBirth: "",
+    location: "",
+    identity: [] as string[],
+    agree: false,
+  });
+
   return (
     <div
-      className="flex justify-center items-center min-h-screen"
+      className="relative flex justify-center items-center min-h-screen"
       style={{
         backgroundImage: `url(${Background.src})`,
         backgroundSize: "cover",
-        backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        // minHeight: "100vh",
       }}
     >
+      {/* Background Overlay */}
+      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
 
       {/* Registration Card */}
-      <div className="bg-[#00000099] backdrop-blur-[12px] shadow-lg rounded-lg p-8 max-w-lg w-full text-white">
+      <div className="relative z-10 bg-[#00000099] backdrop-blur-[12px] shadow-lg rounded-lg p-8 max-w-lg w-full text-white">
         {/* Logo */}
         <div className="flex justify-center pb-6">
           <Image
@@ -39,7 +52,6 @@ export default function RegisterPage() {
 
         {/* Form */}
         <form className="space-y-4">
-          
           <div>
             <label className="block text-sm font-medium mb-1">
               Email address
@@ -51,7 +63,6 @@ export default function RegisterPage() {
             />
           </div>
 
-         
           <div>
             <label className="block text-sm font-medium mb-1">Password</label>
             <input
@@ -61,7 +72,28 @@ export default function RegisterPage() {
             />
           </div>
 
-        
+          <div className="flex items-center gap-3">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                First name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your first name"
+                className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Last name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your last name"
+                className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              />
+            </div>
+          </div>
           <div>
             <label className="block text-sm font-medium mb-1">User name</label>
             <input
@@ -71,7 +103,6 @@ export default function RegisterPage() {
             />
           </div>
 
-         
           <div className="relative">
             <label className="block text-sm font-medium mb-1">
               Date of birth
@@ -80,10 +111,8 @@ export default function RegisterPage() {
               type="date"
               className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 text-white placeholder-gray-300 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
             />
-            <FaCalendarAlt className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400" />
           </div>
 
-        
           <div className="relative bg-[#483C19B5] py-5 px-3 rounded-2xl">
             <label className="block text-sm font-medium mb-1">
               Your current location
@@ -93,13 +122,11 @@ export default function RegisterPage() {
               placeholder="Street address, city, state"
               className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
             />
-          
             <button className="flex items-center justify-center mt-4 w-full text-yellow-500">
-            <FaMapMarkerAlt /> Use my current location
+              <FaMapMarkerAlt /> Use my current location
             </button>
           </div>
 
-         
           <div>
             <label className="block text-sm font-medium mb-1">
               I identify as:
@@ -129,7 +156,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-        
           <div>
             <label className="flex items-center space-x-2 text-sm">
               <input
@@ -151,7 +177,6 @@ export default function RegisterPage() {
             </label>
           </div>
 
-        
           <button
             type="submit"
             className="w-full flex items-center justify-center gap-3 bg-yellow-500 text-white font-medium py-2 rounded-md transition duration-300 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
@@ -163,8 +188,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
-// RegisterPage.getLayout = function getLayout(page: React.ReactNode) {
-//     return <AuthLayout>{page}</AuthLayout>;
-//   };
-

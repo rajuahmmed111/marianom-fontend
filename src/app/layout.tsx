@@ -1,16 +1,10 @@
-import type { Metadata } from 'next';
-import localFont from 'next/font/local';
-import './globals.css';
-import Background from '@/assets/background/background.png';
-// import Background from "@/assets/background/bg.png"
-// import Navbar from "@/components/common/Navbar";
-// import Footer from "@/components/common/Footer";
-// import TopBar from "@/components/common/TopBar";
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import Background from "@/assets/background/bg.png";
+import React from "react";
+import Header from "@/components/common/Header";
 
-import React from 'react';
-// import path from "path";
-import Header from '@/components/common/Header';
-import ReduxProvider from '@/redux/api/provider/ReduxProvider';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -46,22 +40,27 @@ export default function RootLayout({
       <body
         style={{
           backgroundImage: `url(${Background.src})`,
-          backgroundSize: 'cover',
-          backgroundRepeat: 'repeat',
-          backgroundColor: '#594614',
-          backgroundBlendMode: 'multiply',
-          minHeight: '100vh',
+          backgroundSize: "cover", 
+          backgroundRepeat: "repeat",
+          backgroundColor: "#594614", 
+          minHeight: "100vh",
+          backgroundPosition:"center",
+          backgroundAttachment: "fixed",
+
         }}
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* <TopBar /> */}
-        <div className='md:container'>
-          {/* <Navbar /> */}
-          <Header />
+         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        
+      
+        <div className="">
+         
+          <Header/>
+          
         </div>
         <div className='md:px-5'>
           {/* <ReduxProvider> */}
           {!isLogin ? (
-            <div className='md:container md:rounded-lg text-text'>
+            <div className="md:rounded-lg text-text">
               {children}
             </div>
           ) : (
@@ -69,7 +68,9 @@ export default function RootLayout({
           )}
           {/* </ReduxProvider> */}
         </div>
-        <div className='md:container'>{/* <Footer /> */}</div>
+        <div className="md:container">
+         
+        </div>
       </body>
     </html>
   );
