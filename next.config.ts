@@ -1,9 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  env: {
-    NEXT_PUBLIC_BASE_URL: 'http://localhost:5000/api/v1',
-  },
   images: {
     // Disable the built-in image optimization when using an external CDN or serving images
     unoptimized: false,

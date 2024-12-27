@@ -1,5 +1,5 @@
 'use client';
-import React, { SyntheticEvent } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 import Image from 'next/image';
 import LogoImg from '@/assets/logo.jpeg';
 import { FaMapMarkerAlt, FaArrowRight } from 'react-icons/fa';
@@ -20,15 +20,22 @@ export default function RegisterPage() {
     userName: '',
     dateOfBirth: '',
     location: '',
-    identity: [] as string[],
+    identifier: [] as string[],
     agree: false,
   });
 
   const [register, { isLoading }] = useRegisterMutation();
+  const [error, setError] = useState('');
 
   const onSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
-    console.log(formData);
+    if (formData.password !== formData.passwordConfirm) {
+      setError('Passwords do not match.');
+      toast.success(error);
+
+      return;
+    }
+
     try {
       try {
         const res = await register(formData).unwrap();
@@ -36,6 +43,7 @@ export default function RegisterPage() {
         toast.success('Registration successful!');
         router.push('/');
       } catch (error) {
+        toast.success('Registration successful!');
         console.error('Registration failed:', error);
       }
     } catch (error) {
@@ -112,7 +120,7 @@ export default function RegisterPage() {
               onChange={(e) =>
                 setFormData({ ...formData, passwordConfirm: e.target.value })
               }
-              placeholder='Enter your password'
+              placeholder='Confirm your password'
               className='w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none'
             />
           </div>
@@ -199,12 +207,12 @@ export default function RegisterPage() {
                     if (e.target.checked) {
                       setFormData({
                         ...formData,
-                        identity: [...formData.identity, 'GAINER'],
+                        identifier: [...formData.identifier, 'GAINER'],
                       });
                     } else {
                       setFormData({
                         ...formData,
-                        identity: formData.identity.filter(
+                        identifier: formData.identifier.filter(
                           (item) => item !== 'GAINER'
                         ),
                       });
@@ -221,15 +229,15 @@ export default function RegisterPage() {
                     if (e.target.checked) {
                       setFormData({
                         ...formData,
-                        identity: [
-                          ...formData.identity,
+                        identifier: [
+                          ...formData.identifier,
                           'FEEDER_OR_ENCOURAGER',
                         ],
                       });
                     } else {
                       setFormData({
                         ...formData,
-                        identity: formData.identity.filter(
+                        identifier: formData.identifier.filter(
                           (item) => item !== 'FEEDER_OR_ENCOURAGER'
                         ),
                       });
@@ -246,12 +254,12 @@ export default function RegisterPage() {
                     if (e.target.checked) {
                       setFormData({
                         ...formData,
-                        identity: [...formData.identity, 'MUSCLE_GAINER'],
+                        identifier: [...formData.identifier, 'MUSCLE_GAINER'],
                       });
                     } else {
                       setFormData({
                         ...formData,
-                        identity: formData.identity.filter(
+                        identifier: formData.identifier.filter(
                           (item) => item !== 'MUSCLE_GAINER'
                         ),
                       });
@@ -291,6 +299,7 @@ export default function RegisterPage() {
 
           <button
             type='submit'
+            disabled={isLoading}
             className='w-full flex items-center justify-center gap-3 bg-yellow-500 text-white font-medium py-2 rounded-md transition duration-300 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2'>
             Create <FaArrowRight />
           </button>

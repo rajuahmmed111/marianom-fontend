@@ -11,12 +11,14 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ['User'],
     }),
     register: builder.mutation({
-      query: (data) => ({
-        url: '/users/create',
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['User'],
+      query: (data) => {
+        console.log(15, data);
+        return {
+          url: '/users/create',
+          method: 'POST',
+          body: data,
+        };
+      },
     }),
     sendOtp: builder.mutation({
       query: (email) => ({
