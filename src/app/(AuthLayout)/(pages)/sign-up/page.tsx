@@ -14,31 +14,29 @@ export default function RegisterPage() {
     email: '',
     password: '',
     passwordConfirm: '',
-
     firstName: '',
     lastName: '',
     userName: '',
     dateOfBirth: '',
-    location: '',
+    currentLocation: '',
     identifier: [] as string[],
     agree: false,
   });
 
   const [register, { isLoading }] = useRegisterMutation();
-  const [error, setError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const onSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
     if (formData.password !== formData.passwordConfirm) {
-      setError('Passwords do not match.');
-      toast.success(error);
-
-      return;
+      setPasswordError('Passwords do not match.');
+      toast.error(passwordError);
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { agree, passwordConfirm, ...payload } = formData;
     try {
       try {
-        const res = await register(formData).unwrap();
+        const res = await register(payload).unwrap();
         console.log(res.data);
         toast.success('Registration successful!');
         router.push('/');
@@ -123,6 +121,9 @@ export default function RegisterPage() {
               placeholder='Confirm your password'
               className='w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none'
             />
+            {passwordError && (
+              <p className='text-red-500 text-sm'>{passwordError}</p>
+            )}
           </div>
 
           <div className='flex items-center gap-3'>
@@ -185,7 +186,7 @@ export default function RegisterPage() {
             <input
               type='text'
               onChange={(e) =>
-                setFormData({ ...formData, location: e.target.value })
+                setFormData({ ...formData, currentLocation: e.target.value })
               }
               placeholder='Street address, city, state'
               className='w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none'

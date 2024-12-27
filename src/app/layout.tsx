@@ -5,6 +5,7 @@ import Background from '@/assets/background/bg.png';
 import React from 'react';
 import Header from '@/components/common/Header';
 import ReduxProvider from '@/redux/api/provider/ReduxProvider';
+import { Toaster } from 'sonner';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
