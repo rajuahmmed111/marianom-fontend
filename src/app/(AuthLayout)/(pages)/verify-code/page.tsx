@@ -6,6 +6,9 @@ import check from '@/assets/check.png';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useVerifyOtpMutation } from '@/redux/features/authSlice/authApi';
 import { toast } from 'sonner';
+import { setUser } from "@/redux/features/authSlice/authSlice";
+import { useDispatch } from 'react-redux';
+
 
 export default function VerifyCodePage() {
   const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -13,15 +16,30 @@ export default function VerifyCodePage() {
   const hexCode: any = searchParams.get('hexCode');
 
   const handleChange = (index: number, value: string) => {
-    if (value.length > 1) return;
+    if (value.length > 1) return; // Allow only single-character input
+
     const newCode = [...code];
     newCode[index] = value;
+
     setCode(newCode);
+
+    // Move focus to the next input if the current input is filled
+    if (value && index < code.length - 1) {
+      const nextInput = document.getElementById(`otp-input-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, event: React.KeyboardEvent) => {
+    if (event.key === 'Backspace' && !code[index] && index > 0) {
+      const previousInput = document.getElementById(`otp-input-${index - 1}`);
+      previousInput?.focus();
+    }
   };
 
   const [verifyOtp] = useVerifyOtpMutation();
   const router = useRouter();
-
+const dispatch = useDispatch()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Verification Code:', code.join(''));
@@ -33,7 +51,13 @@ export default function VerifyCodePage() {
       console.log(res.data);
       if (res.success) {
         toast.success(res.message);
-        router.push('/verify-code?' + res.data.hexCode);
+        dispatch(
+          setUser({
+            token: res.data,
+            user: undefined
+          })
+        );
+        router.push('/');
       }
     } catch (error) {
       toast.error('Login failed:', {
@@ -81,11 +105,13 @@ export default function VerifyCodePage() {
             {code.map((value, index) => (
               <input
                 key={index}
-                type='text'
+                id={`otp-input-${index}`}
+                type="text"
                 maxLength={1}
                 value={value}
                 onChange={(e) => handleChange(index, e.target.value)}
-                className='w-12 h-12 text-center border rounded-md focus:ring-2 focus:ring-yellow-500 focus:outline-none bg-transparent text-white text-xl'
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                className="w-12 h-12 text-center border rounded-md focus:ring-2 focus:ring-yellow-500 focus:outline-none bg-transparent text-white text-xl"
               />
             ))}
           </div>

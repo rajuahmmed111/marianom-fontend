@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   const homeRoute = `${request.nextUrl.origin}/login`;
   // const dashboardRoute = `${request.nextUrl.origin}/dashboard`;
   const adminRoutes = [
-    '/',
+    // '/',
     '/event-creator',
     '/running-event',
     '/subscription',
@@ -38,5 +38,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/profile'], // Apply middleware to the /services route
+  matcher: [ '/profile'], // Apply middleware to the /services route
 };

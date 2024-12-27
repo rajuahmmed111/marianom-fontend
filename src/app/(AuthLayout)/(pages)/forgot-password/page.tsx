@@ -1,15 +1,36 @@
-// import React, { useState } from "react";
+'use client'
+import React, { useState } from "react";
 import Image from "next/image";
 import LogoImg from "@/assets/logo.jpeg";
+import { useSendOtpMutation } from "@/redux/features/authSlice/authApi";
+import { toast } from "sonner";
+// import { useRouter } from 'next/navigation';
 
 export default function ForgetPasswordPage() {
-//   const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
 
-//   const handleSubmit = (e: React.FormEvent) => {
-//     e.preventDefault();
-//     console.log("Forget Password Email:", email);
-//     // Implement API call for sending the reset code
-//   };
+  const [sendOtp] = useSendOtpMutation()
+  
+// const router = useRouter()
+  const handleSubmit = async(e: any) => {
+    e.preventDefault();
+
+
+    try {
+      const res = await sendOtp({email});
+      console.log(res);
+      if (res) {
+        toast.success("Please check your email . Then Change your Password.")
+        // router.push('/resetPassword')
+      }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      toast.error("error")
+      
+    }
+    console.log("Forget Password Email:", email);
+    // Implement API call for sending the reset code
+  };
 
   return (
     <div
@@ -41,8 +62,8 @@ export default function ForgetPasswordPage() {
             </label>
             <input
               type="email"
-            //   value={email}
-            //   onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="georgia.young@example.com"
               className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-yellow-500 focus:outline-none bg-transparent text-white"
               required
@@ -50,6 +71,7 @@ export default function ForgetPasswordPage() {
           </div>
           <button
             type="submit"
+            onClick={handleSubmit}
             className="w-full bg-yellow-500 text-white font-medium py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
           >
             Send Code
