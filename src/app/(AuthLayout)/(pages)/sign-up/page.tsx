@@ -23,7 +23,7 @@ export default function RegisterPage() {
     agree: false,
   });
 
-  const [register, { isLoading }] = useRegisterMutation();
+  const [register, { isLoading, error }] = useRegisterMutation();
   const [passwordError, setPasswordError] = useState('');
 
   const onSubmit = async (event: SyntheticEvent) => {
@@ -38,10 +38,18 @@ export default function RegisterPage() {
       try {
         const res = await register(payload).unwrap();
         console.log(res.data);
-        toast.success('Registration successful!');
-        router.push('/');
+        if (res.success) {
+          toast.success('Registration successful!');
+          router.push('/login');
+        }
+        // Handle errors here
+        toast.error((error as { message: string })?.message);
       } catch (error) {
-        toast.success('Registration successful!');
+        toast.error('Registration failed:', {
+          className: 'bg-red-300 text-gray-800',
+          description: (error as { message: string })?.message,
+          duration: 2000,
+        });
         console.error('Registration failed:', error);
       }
     } catch (error) {
@@ -102,9 +110,10 @@ export default function RegisterPage() {
             <label className='block text-sm font-medium mb-1'>Password</label>
             <input
               type='password'
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, password: e.target.value });
+                setPasswordError('');
+              }}
               placeholder='Enter your password'
               className='w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none'
             />
@@ -115,9 +124,14 @@ export default function RegisterPage() {
             </label>
             <input
               type='password'
-              onChange={(e) =>
-                setFormData({ ...formData, passwordConfirm: e.target.value })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, passwordConfirm: e.target.value });
+                if (formData.password !== e.target.value) {
+                  setPasswordError('Passwords do not match.');
+                } else {
+                  setPasswordError('');
+                }
+              }}
               placeholder='Confirm your password'
               className='w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none'
             />
@@ -300,7 +314,7 @@ export default function RegisterPage() {
 
           <button
             type='submit'
-            disabled={isLoading}
+            disabled={isLoading || passwordError.length > 0}
             className='w-full flex items-center justify-center gap-3 bg-yellow-500 text-white font-medium py-2 rounded-md transition duration-300 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2'>
             Create <FaArrowRight />
           </button>

@@ -1,12 +1,48 @@
-import React from 'react';
+'use client';
+
+import React, { SyntheticEvent } from 'react';
 import Image from 'next/image';
 import LogoImg from '@/assets/logo.jpeg';
 import { FaArrowRightLong } from 'react-icons/fa6';
 import AuthLayout from '@/app/(AuthLayout)/layouts/AuthLayout';
 import Background from '@/assets/background/authbg.jpeg';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { useLoginMutation } from '@/redux/features/authSlice/authApi';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [formData, setFormData] = React.useState({
+    emailOrUsername: '',
+    password: '',
+  });
+
+  const [login, { isLoading, error }] = useLoginMutation();
+
+  const onSubmit = async (event: SyntheticEvent) => {
+    event.preventDefault();
+
+    try {
+      const res = await login(formData).unwrap();
+      console.log(res.data);
+      if (res.success) {
+        toast.success(res.message);
+        router.push('/verify-code');
+      }
+      // Handle errors here
+      console.log((error as { data: any }).data);
+      toast.error((error as { message: string })?.message);
+    } catch (error) {
+      toast.error('Login failed:', {
+        className: 'bg-red-300 text-gray-800',
+        description: (error as { data: any })?.data.message,
+        duration: 2000,
+      });
+      // console.error('Login failed', error);
+      console.log((error as { data: any }).data);
+    }
+  };
   return (
     <div className='relative flex justify-center items-center min-h-screen'>
       {/* Background Image with Overlay */}
@@ -32,14 +68,19 @@ export default function LoginPage() {
             className='h-auto w-44'
           />
         </div>
-        <form className='space-y-4'>
+        <form
+          className='space-y-4'
+          onSubmit={onSubmit}>
           <div>
             <label className='block text-white text-sm font-medium mb-1'>
-              Email address
+              Email or Username
             </label>
             <input
-              type='email'
-              placeholder='Enter your email'
+              type='text'
+              onChange={(e) =>
+                setFormData({ ...formData, emailOrUsername: e.target.value })
+              }
+              placeholder='Enter mail or Username'
               className='w-full px-4 py-2 border rounded-md bg-transparent focus:ring-2 focus:ring-yellow-500 focus:outline-none text-white'
             />
           </div>
@@ -50,6 +91,9 @@ export default function LoginPage() {
             </label>
             <input
               type='password'
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               placeholder='Enter your password'
               className='w-full px-4 py-2 border rounded-md bg-transparent focus:ring-2 focus:ring-yellow-500 focus:outline-none text-white'
             />
@@ -64,7 +108,7 @@ export default function LoginPage() {
               <span className='text-white'>Remember Me</span>
             </label>
             <Link
-              href='/forgetPassword'
+              href='/forgot-password'
               className='text-red-500 hover:underline'>
               Forgot Password?
             </Link>
@@ -72,6 +116,7 @@ export default function LoginPage() {
 
           <button
             type='submit'
+            disabled={isLoading}
             className='w-full flex items-center justify-center gap-5 bg-yellow-500 text-white font-medium py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2'>
             Log in <FaArrowRightLong />
           </button>
