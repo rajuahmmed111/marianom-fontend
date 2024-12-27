@@ -28,7 +28,7 @@ export default function LoginPage() {
       console.log(res.data);
       if (res.success) {
         toast.success(res.message);
-        router.push('/verify-code');
+        router.push('/verify-code?hexCode=' + res.data.hexCode);
       }
       // Handle errors here
       console.log((error as { data: any }).data);

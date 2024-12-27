@@ -35,8 +35,8 @@ export const authApi = baseApi.injectEndpoints({
       providesTags: ['User'],
     }),
     verifyOtp: builder.mutation({
-      query: (data: { email: string; otp: string }) => ({
-        url: '/auth/verify-otp',
+      query: (data: { hexCode: string; otp: string }) => ({
+        url: '/auth/otp-enter',
         method: 'POST',
         body: data,
       }),
