@@ -48,9 +48,12 @@ export default function RootLayout({
           backgroundAttachment: 'fixed',
         }}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className=''>
-          <Header />
-        </div>
+        {isLogin && (
+          <div className=''>
+            <Header />
+          </div>
+        )}
+
         <div className='md:px-5'>
           <ReduxProvider>
             {!isLogin ? (
