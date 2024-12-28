@@ -4,7 +4,8 @@ import "./globals.css";
 import Background from "@/assets/background/bg.png";
 import React from "react";
 import Header from "@/components/common/Header";
-
+import { Provider } from "react-redux";
+import { store } from "@/redux/store";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,12 +18,12 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export const metadata: Metadata = {
-  title:
-    "Grommr - A site for guys into gaining and encouraging, bellies, chubby bears, gay chubs and admirers",
-  description:
-    "A site for guys into gaining and encouraging, bellies, chubby bears, gay chubs and admirers",
-};
+// export const metadata: Metadata = {
+//   title:
+//     "Grommr - A site for guys into gaining and encouraging, bellies, chubby bears, gay chubs and admirers",
+//   description:
+//     "A site for guys into gaining and encouraging, bellies, chubby bears, gay chubs and admirers",
+// };
 
 const pathName = typeof window !== "undefined" ? window.location.pathname : "";
 
@@ -38,35 +39,29 @@ export default function RootLayout({
       <body
         style={{
           backgroundImage: `url(${Background.src})`,
-          backgroundSize: "cover", 
+          backgroundSize: "cover",
           backgroundRepeat: "repeat",
-          backgroundColor: "#594614", 
+          backgroundColor: "#594614",
           minHeight: "100vh",
-          backgroundPosition:"center",
+          backgroundPosition: "center",
           backgroundAttachment: "fixed",
-
         }}
-         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        
-      
         <div className="">
-         
-          <Header/>
-          
+          <Header />
         </div>
-        <div className="md:px-5">
-          {!isLogin ? (
-            <div className="md:rounded-lg text-text">
-              {children}
-            </div>
-          ) : (
-            <>{children}</>
-          )}
-        </div>
-        <div className="md:container">
-         
-        </div>
+        {/* wrap provider */}
+        <Provider store={store}>
+          <div className="md:px-5">
+            {!isLogin ? (
+              <div className="md:rounded-lg text-text">{children}</div>
+            ) : (
+              <>{children}</>
+            )}
+          </div>
+        </Provider>
+        <div className="md:container"></div>
       </body>
     </html>
   );

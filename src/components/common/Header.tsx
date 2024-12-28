@@ -4,6 +4,7 @@ import Image from "next/image";
 import LogoImg from "@/assets/logo.jpeg";
 import { IoSettingsOutline } from "react-icons/io5";
 import { usePathname } from "next/navigation";
+// import Link from "next/link";
 
 import Link from "next/link";
 import { MdClose, MdMenu } from "react-icons/md";
@@ -84,6 +85,7 @@ const Header = () => {
             {/* Right Section (Logout & Settings Buttons) */}
             <div className="flex items-center gap-8">
               <div className="flex items-center border-r border-gray-300 pr-4">
+                <Link href="/login">
                 <button className="md:flex items-center px-4 py-2 text-white bg-red-900 rounded-md transition hidden">
                   <span className="mr-2">
                     <svg
@@ -101,8 +103,9 @@ const Header = () => {
                       />
                     </svg>
                   </span>
-                  Logout
+                  Login
                 </button>
+                </Link>
               </div>
 
               {/* Settings Button */}

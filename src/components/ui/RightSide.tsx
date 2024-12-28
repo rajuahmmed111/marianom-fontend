@@ -1,26 +1,85 @@
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegCommentDots, FaPaperPlane } from "react-icons/fa6";
 import { MdFavoriteBorder, MdMessage } from "react-icons/md";
-import News from "@/assets/news.jpeg";
-import Globe from "@/assets/globe.png";
-import ProfileImg from "@/assets/profile.png";
 import { FaRegEdit } from "react-icons/fa";
 import Link from "next/link";
+import profileImage from "@/assets/profile.png"; // Ensure this path is correct
+
+// Typescript type definition
+interface Post {
+  id: string;
+  description: string;
+  images: string[] | null;
+  videos: string[] | null;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    profileImage: {
+      url: string;
+      altText: string;
+    } | null;
+  };
+  _count: {
+    favoritedBy: number;
+    comments: number;
+  };
+}
 
 export default function RightSide() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [comment, setComment] = useState("");
 
-  const handleCommentClick = () => {
-    setShowModal(true);
+  // Function to fetch posts from the API
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          "https://marianom-backend.vercel.app/api/v1/post"
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch posts");
+        }
+
+        const data = await response.json();
+
+        // Access posts from `data.data.meta.data`
+        const posts = data?.data?.meta?.data || [];
+        setPosts(posts);
+
+        console.log("Fetched Posts:", posts);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        setError((error as any).message || "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  const getValidImageURL = (image: string) => {
+    if (image.startsWith("http://") || image.startsWith("https://")) {
+      return image;
+    }
+    return `https://your-backend-server.com/${image}`;
   };
 
+  // Handlers for the comment modal
+  const handleCommentClick = () => setShowModal(true);
   const handleCloseModal = () => {
     setShowModal(false);
     setComment("");
   };
-
   const handleSendComment = () => {
     console.log("Comment Sent:", comment);
     handleCloseModal();
@@ -32,18 +91,7 @@ export default function RightSide() {
         {/* Header Section */}
         <div className="flex justify-between flex-col md:flex-row md:items-center pb-6 mb-6 border-b border-[#796943] gap-5 md:gap-0">
           <div>
-            <div className="flex items-center gap-2">
-              <Image
-                src={Globe.src}
-                alt="globe image"
-                width={25}
-                height={25}
-                className="rounded-full"
-              />
-              <h1 className="text-2xl font-semibold text-white">
-                Global News Feed
-              </h1>
-            </div>
+            <h1 className="text-2xl font-semibold text-white">Global News Feed</h1>
             <p className="text-white text-sm">Updates from everyone</p>
           </div>
 
@@ -61,69 +109,92 @@ export default function RightSide() {
         </div>
 
         {/* Feed Content */}
-        <div className="space-y-6">
-          {[...Array(10)].map((_, index) => (
-            <div
-              key={index}
-              className="text-white border-b border-[#796943] p-4 space-y-4"
-            >
-              {/* User Info */}
-              <div className="flex items-center gap-4 flex-wrap">
-                <Image
-                  src={ProfileImg.src}
-                  alt="User"
-                  width={50}
-                  height={50}
-                  className="rounded-full"
-                />
-                <div>
-                  <p className="font-semibold mb-1 text-[18px] sm:text-[20px]">
-                    GainerSheWrote
-                  </p>
-                  <p className="text-sm text-gray-400 flex items-center gap-2">
-                    <FaRegEdit /> Just now
-                  </p>
+        {loading ? (
+          <p className="text-center text-white">Loading posts...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : posts.length === 0 ? (
+          <p className="text-center text-white">No posts available</p>
+        ) : (
+          <div className="space-y-6">
+            {posts.map((post) => (
+              <div
+                key={post.id}
+                className="text-white border-b border-[#796943] p-4 space-y-4"
+              >
+                {/* User Info */}
+                <div className="flex items-center gap-4 flex-wrap">
+                  <Image
+                    src={post.user.profileImage?.url || profileImage.src} // Fallback to imported profile image
+                    alt={
+                      post.user.profileImage?.altText || "Default user profile image"
+                    }
+                    width={80}
+                    height={80}
+                    className="rounded-full w-20 h-20"
+                  />
+                  <div>
+                    <p className="font-semibold mb-1 text-[18px] sm:text-[20px]">
+                      {post.user.firstName} {post.user.lastName}
+                    </p>
+                    <p className="text-sm text-gray-400 flex items-center gap-2">
+                      <FaRegEdit /> Just now
+                    </p>
+                  </div>
+                </div>
+
+                {/* Post Content */}
+                <p className="mt-2">{post.description || "No description provided."}</p>
+
+                {/* Post Images */}
+                {post.images &&
+                  post.images.length > 0 &&
+                  post.images.map((image, index) => (
+                    <Image
+                      key={index}
+                      src={getValidImageURL(image)}
+                      alt={`Post Image ${index + 1}`}
+                      width={300}
+                      height={100}
+                      className="rounded-md w-[300px] h-auto"
+                    />
+                  ))}
+
+                {/* Post Videos */}
+                {post.videos &&
+                  post.videos.map((video, index) => (
+                    <video
+                      key={index}
+                      controls
+                      className="rounded-md w-[300px] h-auto mt-4"
+                    >
+                      <source src={video} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ))}
+
+                {/* Buttons */}
+                <div className="flex gap-4 mt-4">
+                  <button className="flex items-center gap-2 text-gray-300 hover:text-yellow-500">
+                    <MdFavoriteBorder /> {post._count.favoritedBy} Favorite
+                  </button>
+                  <button
+                    onClick={handleCommentClick}
+                    className="flex items-center gap-2 text-gray-300 hover:text-yellow-500"
+                  >
+                    <FaRegCommentDots /> {post._count.comments} Comment
+                  </button>
+                  <Link
+                    href="/message"
+                    className="flex items-center gap-2 text-gray-300 hover:text-yellow-500"
+                  >
+                    <MdMessage /> Message
+                  </Link>
                 </div>
               </div>
-
-              {/* Post Content */}
-              <p className="text-sm md:text-base leading-relaxed">
-                I&apos;m overloading on sweets today with the three Cs:
-                Cupcakes, Cookies, and Candy. I&apos;m overloading on sweets
-                today with the three Cs: Cupcakes, Cookies, and Candy.
-              </p>
-
-              {/* Conditional Post Image */}
-              {index === 2 && (
-                <Image
-                  src={News.src}
-                  alt="Post Image"
-                  width={600}
-                  height={300}
-                  className="rounded-md w-full h-auto"
-                />
-              )}
-
-              {/* Buttons */}
-              <div className="flex flex-wrap gap-3 text-gray-300">
-                <button className="hover:text-yellow-500 flex items-center gap-2">
-                  <MdFavoriteBorder /> Favorite
-                </button>
-                <button
-                  onClick={handleCommentClick}
-                  className="hover:text-yellow-500 flex items-center gap-2"
-                >
-                  <FaRegCommentDots /> Comment
-                </button>
-                <Link href="/message">
-                  <button className="hover:text-yellow-500 flex items-center gap-2">
-                    <MdMessage /> Message
-                  </button>
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
 
       {/* Comment Modal */}

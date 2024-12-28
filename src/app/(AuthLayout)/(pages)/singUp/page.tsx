@@ -1,13 +1,17 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
+ import { useRouter } from "next/router";
 import LogoImg from "@/assets/logo.jpeg";
 import { FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
 import Background from "@/assets/background/authbg.jpeg";
+import { useRegisterUserMutation } from "@/redux/auth/authApi";
 
 export default function RegisterPage() {
-  
-  const [formData, setFormData] = React.useState({
+  const router = useRouter();
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
+
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
     firstName: "",
@@ -18,6 +22,46 @@ export default function RegisterPage() {
     identity: [] as string[],
     agree: false,
   });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
+
+    if (type === "checkbox" && name === "identity") {
+      // Handle identity checkboxes
+      setFormData((prev) => ({
+        ...prev,
+        identity: checked
+          ? [...prev.identity, value]
+          : prev.identity.filter((item) => item !== value),
+      }));
+    } else if (type === "checkbox" && name === "agree") {
+      setFormData((prev) => ({ ...prev, agree: checked }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.agree) {
+      alert("You must agree to the terms and conditions.");
+      return;
+    }
+
+    try {
+      const response = await registerUser(formData).unwrap();
+      console.log("User registered successfully:", response);
+
+      // Redirect to login page
+      router.push("/login");
+    } catch (error) {
+      console.error("Registration failed:", error);
+      alert("Registration failed. Please try again.");
+    }
+  };
 
   return (
     <div
@@ -51,14 +95,18 @@ export default function RegisterPage() {
         </h2>
 
         {/* Form */}
-        <form className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">
               Email address
             </label>
             <input
               type="email"
+              name="email"
               placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              required
               className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
             />
           </div>
@@ -67,7 +115,11 @@ export default function RegisterPage() {
             <label className="block text-sm font-medium mb-1">Password</label>
             <input
               type="password"
+              name="password"
               placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              required
               className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
             />
           </div>
@@ -79,7 +131,11 @@ export default function RegisterPage() {
               </label>
               <input
                 type="text"
+                name="firstName"
                 placeholder="Enter your first name"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
                 className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               />
             </div>
@@ -89,16 +145,25 @@ export default function RegisterPage() {
               </label>
               <input
                 type="text"
+                name="lastName"
                 placeholder="Enter your last name"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
                 className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               />
             </div>
           </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">User name</label>
             <input
               type="text"
+              name="userName"
               placeholder="Enter your user name"
+              value={formData.userName}
+              onChange={handleChange}
+              required
               className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
             />
           </div>
@@ -109,6 +174,10 @@ export default function RegisterPage() {
             </label>
             <input
               type="date"
+              name="dateOfBirth"
+              value={formData.dateOfBirth}
+              onChange={handleChange}
+              required
               className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 text-white placeholder-gray-300 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
             />
           </div>
@@ -119,10 +188,16 @@ export default function RegisterPage() {
             </label>
             <input
               type="text"
+              name="location"
               placeholder="Street address, city, state"
+              value={formData.location}
+              onChange={handleChange}
               className="w-full px-4 py-2 border rounded-md bg-transparent border-gray-400 placeholder-gray-300 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
             />
-            <button className="flex items-center justify-center mt-4 w-full text-yellow-500">
+            <button
+              type="button"
+              className="flex items-center justify-center mt-4 w-full text-yellow-500"
+            >
               <FaMapMarkerAlt /> Use my current location
             </button>
           </div>
@@ -135,6 +210,10 @@ export default function RegisterPage() {
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
+                  name="identity"
+                  value="Gainer"
+                  checked={formData.identity.includes("Gainer")}
+                  onChange={handleChange}
                   className="form-checkbox rounded text-yellow-500 focus:ring-0"
                 />
                 <span>Gainer</span>
@@ -142,16 +221,24 @@ export default function RegisterPage() {
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
+                  name="identity"
+                  value="Feeder"
+                  checked={formData.identity.includes("Feeder")}
+                  onChange={handleChange}
                   className="form-checkbox rounded text-yellow-500 focus:ring-0"
                 />
-                <span>Feeder/encourage</span>
+                <span>Feeder/Encourage</span>
               </label>
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
+                  name="identity"
+                  value="Muscle gainer"
+                  checked={formData.identity.includes("Muscle gainer")}
+                  onChange={handleChange}
                   className="form-checkbox rounded text-yellow-500 focus:ring-0"
                 />
-                <span>Muscle gainer</span>
+                <span>Muscle Gainer</span>
               </label>
             </div>
           </div>
@@ -160,6 +247,9 @@ export default function RegisterPage() {
             <label className="flex items-center space-x-2 text-sm">
               <input
                 type="checkbox"
+                name="agree"
+                checked={formData.agree}
+                onChange={handleChange}
                 className="form-checkbox rounded text-yellow-500 focus:ring-0"
                 required
               />
@@ -179,9 +269,10 @@ export default function RegisterPage() {
 
           <button
             type="submit"
+            disabled={isLoading}
             className="w-full flex items-center justify-center gap-3 bg-yellow-500 text-white font-medium py-2 rounded-md transition duration-300 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
           >
-            Create <FaArrowRight />
+            {isLoading ? "Creating..." : "Create"} <FaArrowRight />
           </button>
         </form>
       </div>

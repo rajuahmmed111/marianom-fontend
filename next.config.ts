@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   images: {
     // Disable the built-in image optimization when using an external CDN or serving images
     unoptimized: false,
+    domains: ['localhost', 'picsum.photos'],
 
     // Allow loading images from all origins
     remotePatterns: [
