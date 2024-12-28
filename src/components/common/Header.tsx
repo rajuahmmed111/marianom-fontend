@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
@@ -7,15 +8,48 @@ import { usePathname } from "next/navigation";
 
 import Link from "next/link";
 import { MdClose, MdMenu } from "react-icons/md";
+// import { useLogoutMutation } from "@/redux/features/authSlice/authApi";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { logout } from "@/redux/features/authSlice/authSlice";
+
+// import { jwtDecode } from "jwt-decode";
+
+
+interface DecodedToken extends JwtPayload {
+  id: string;
+  email: string
+}
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const route = usePathname();
-  if (/^\/(singUp|login|forgetPassword|verifyCode|resetPassword)/.test(route)) return;
+  const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useDispatch();
+  
+  if (/^\/(singUp|login|forgetPassword|verifyCode|resetPassword)/.test(pathname)) return null;
 
   const toggleMenu: React.MouseEventHandler<HTMLButtonElement> = () => {
     setIsMenuOpen((prevState) => !prevState);
   };
+
+  
+  const handleLogout = async() => {
+    dispatch(logout());
+    router.push("/");
+    toast.success('log out successfully.')
+
+
+  }
+  const token = useSelector((state: RootState) => state.auth.token)
+  // console.log('my token is', token);
+
+  const decodedToken = token ? (jwt.decode(token) as DecodedToken) : null;
+  
 
   return (
     <>
@@ -84,25 +118,47 @@ const Header = () => {
             {/* Right Section (Logout & Settings Buttons) */}
             <div className="flex items-center gap-8">
               <div className="flex items-center border-r border-gray-300 pr-4">
-                <button className="md:flex items-center px-4 py-2 text-white bg-red-900 rounded-md transition hidden">
-                  <span className="mr-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15.75 9V5.25a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v13.5a2.25 2.25 0 002.25 2.25h6.75a2.25 2.25 0 002.25-2.25V15m-3-6l3 3m0 0l-3 3m3-3H9"
-                      />
-                    </svg>
-                  </span>
-                  Logout
-                </button>
+                {decodedToken ? (
+                  <button onClick={handleLogout} className="md:flex items-center px-4 py-2 text-white bg-red-900 rounded-md transition hidden">
+                    <span className="mr-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-5 h-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.75 9V5.25a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v13.5a2.25 2.25 0 002.25 2.25h6.75a2.25 2.25 0 002.25-2.25V15m-3-6l3 3m0 0l-3 3m3-3H9"
+                        />
+                      </svg>
+                    </span>
+                    Logout
+                  </button>
+                ) : (
+                    <Link href='/login'  className="md:flex items-center px-4 py-2 text-white bg-[#725713] rounded-md transition hidden">
+                      <span className="mr-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.75 9V5.25a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v13.5a2.25 2.25 0 002.25 2.25h6.75a2.25 2.25 0 002.25-2.25V15m-3-6l3 3m0 0l-3 3m3-3H9"
+                          />
+                        </svg>
+                      </span>
+                      Log in
+                    </Link>
+               )}
               </div>
 
               {/* Settings Button */}

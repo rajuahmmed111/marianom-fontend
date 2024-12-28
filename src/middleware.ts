@@ -38,5 +38,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [ '/profile'], // Apply middleware to the /services route
+  matcher: [ ], // Apply middleware to the /services route
 };

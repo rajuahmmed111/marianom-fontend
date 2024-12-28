@@ -12,10 +12,33 @@ import LatestEveryone from "./LatestEveryone";
 import NeearByOnline from "./NeearByOnline";
 import Link from "next/link";
 import { IoSettingsOutline } from "react-icons/io5";
+import { useGetProfileQuery } from "@/redux/features/authSlice/authApi";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import jwt, { JwtPayload } from "jsonwebtoken";
+// import { profile } from "console";
+
+interface DecodedToken extends JwtPayload {
+  id: string;
+  email: string
+}
 
 export default function NewsFeed() {
   const [activeTab, setActiveTab] = useState<string>("global");
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+
+  const token = useSelector((state: RootState) => state.auth.token)
+
+
+  const decodedToken = token ? (jwt.decode(token) as DecodedToken) : null;
+
+
+  const id = decodedToken ? decodedToken.id : null;
+
+  // console.log('My profile id is', id);
+  const { data: MyProfile } = useGetProfileQuery(id)
+  console.log(MyProfile);
+
 
   const toggleDrawer = () => setIsDrawerOpen((prev) => !prev);
 
@@ -33,7 +56,7 @@ export default function NewsFeed() {
       <div className="container flex mx-auto px-4 relative">
         {/* Static Sidebar for Desktop */}
         <aside className="w-[321px] bg-secondary text-white p-5 space-y-6 hidden md:block">
-          <ProfileSection />
+          <ProfileSection MyProfile={MyProfile} />
           <SidebarNav activeTab={activeTab} setActiveTab={setActiveTab} />
           <VisitorsSection />
           <OnlineSection />
@@ -52,7 +75,7 @@ export default function NewsFeed() {
           >
             <IoMdClose size={24} />
           </button>
-          <ProfileSection />
+          <ProfileSection MyProfile={MyProfile} />
           <SidebarNav
             activeTab={activeTab}
             setActiveTab={(tab) => {
@@ -78,7 +101,11 @@ export default function NewsFeed() {
 }
 
 /** Profile Section Component */
-const ProfileSection: React.FC = () => {
+interface ProfileSectionProps {
+  MyProfile: any;
+}
+
+const ProfileSection: React.FC<ProfileSectionProps> = ({ MyProfile }) => {
   return (
     <div className="flex flex-col md:flex-row md:gap-8 items-center border-b-2 border-[#796943] pb-4">
       <Image
@@ -89,7 +116,8 @@ const ProfileSection: React.FC = () => {
         className="rounded-full mb-3"
       />
       <div className="text-center">
-        <h2 className="text-lg font-semibold mb-1">LeoPanxon</h2>
+        <h2 className="text-lg font-semibold mb-1">{MyProfile?.data?.firstName }</h2>
+        {/* <h2>{MyProfile?.data?.firstName}</h2> */}
         <Link href="/profile">
           <p className="border-b border-[#796943] inline-block">My account</p>
         </Link>

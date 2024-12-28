@@ -48,14 +48,50 @@ export const authApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    logout: builder.mutation({
+      query: () => ({
+        url: '/auth/logout',
+        method: 'POST',
+        // body: data,
+      }),
+    }),
+  
     updateUser: builder.mutation({
       query: (data) => ({
-        url: '/users/profile',
+        url: '/users/update',
         method: 'PUT',
         body: data,
       }),
       invalidatesTags: ['User'],
     }),
+    changePassword: builder.mutation({
+      query: (data) => ({
+        url: '/auth/change-password',
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+
+    getProfile: builder.query({
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: 'GET',
+      }),
+      providesTags: ['User'],
+    }),
+    updateProfileImage: builder.mutation({
+      query: ({id, data}) => ({
+        url: `/users/profile-img-update/${id}`,
+        method: 'PATCH',
+        body: data
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+
+    
   }),
 });
 
@@ -67,4 +103,8 @@ export const {
   useVerifyOtpMutation,
   useResetPasswordMutation,
   useUpdateUserMutation,
+  useLogoutMutation,
+  useGetProfileQuery,
+  useChangePasswordMutation,
+  useUpdateProfileImageMutation
 } = authApi;

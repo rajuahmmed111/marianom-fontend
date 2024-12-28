@@ -12,21 +12,28 @@ if (!baseUrl) {
 }
 
 export const baseApi = createApi({
-  reducerPath: 'baseApi',
+  reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://192.168.11.253:3018/api/v1',
+    baseUrl: "http://192.168.11.253:3018/api/v1",
     prepareHeaders: (headers, { getState }) => {
       const state = getState() as RootState;
-      const authToken = state.auth.token; // Get the token from your auth slice in Redux state
+      const authToken = state.auth.token; // Token from Redux store
 
-      if (authToken) {
-        headers.set('Authorization', `${authToken}`); // Add token to the Authorization header
+      const searchParams = new URLSearchParams(window.location.search);
+      const tokenFromURL = searchParams.get("token"); // Token from URL query params
+
+      // Prioritize token from URL over Redux store
+      const finalToken = tokenFromURL || authToken;
+
+      if (finalToken) {
+        headers.set("Authorization", `${finalToken}`); // Add token to the Authorization header
       }
       return headers;
     },
   }),
-  tagTypes: ['User'],
+  tagTypes: ["User", "Post"],
   endpoints: (builder) => ({}),
 });
 
 export default baseApi;
+
