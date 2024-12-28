@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
     // Allow loading images from all origins
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "**", // Allows all subdomains and domains
+        protocol: 'https',
+        hostname: '**', // Allows all subdomains and domains
       },
     ],
 

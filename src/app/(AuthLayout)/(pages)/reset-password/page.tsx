@@ -1,20 +1,57 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import Image from "next/image";
 import LogoImg from "@/assets/logo.jpeg";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { useResetPasswordMutation } from "@/redux/features/authSlice/authApi";
+import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
 
 export default function ResetPasswordPage() {
+  const searchParams = useSearchParams();
+
+  // Extract query parameters from the URL
+  const id = searchParams.get("userId");
+  const token = searchParams.get("token");
+  console.log('my token is', token);
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const authToken = useSelector((state: RootState) => state.auth.token); // Get the auth token from Redux store
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Use the resetPassword mutation hook correctly
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent page reload
+
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
+
+    if (!authToken) {
+      toast.error("You must be logged in to reset your password.");
+      return;
+    }
+
+    try {
+      // Call the resetPassword mutation and pass the auth token in the request headers
+      const res = await resetPassword({ id, password, token: token });
+      if (res) {
+        toast.success("Password changed successfully.");
+      } else {
+        toast.error("Password cannot changed. pls try again")
+      }
+
+      toast.success("Password changed successfully.");
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      toast.error("Unable to reset password. Please try again.");
+    }
+
     console.log("New Password:", password);
-    // Implement API call to reset the password
   };
 
   return (
@@ -69,9 +106,11 @@ export default function ResetPasswordPage() {
           </div>
           <button
             type="submit"
-            className="w-full bg-yellow-500 text-white font-medium py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+            disabled={isLoading}
+            className={`w-full bg-yellow-500 text-white font-medium py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
           >
-            Reset Password
+            {isLoading ? "Processing..." : "Reset Password"}
           </button>
         </form>
       </div>
