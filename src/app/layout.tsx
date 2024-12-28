@@ -24,9 +24,9 @@ export const metadata: Metadata = {
     'A site for guys into gaining and encouraging, bellies, chubby bears, gay chubs and admirers',
 };
 
-const pathName = typeof window !== 'undefined' ? window.location.pathname : '';
+// const pathName = typeof window !== 'undefined' ? window.location.pathname : '';
 
-const isLogin = pathName === '/login';
+// const isLogin = pathName === '/login';
 
 export default function RootLayout({
   children,
@@ -48,19 +48,17 @@ export default function RootLayout({
           backgroundAttachment: 'fixed',
         }}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {isLogin && (
+        {/* {isLogin && (
           <div className=''>
-            <Header />
+          
           </div>
-        )}
+        )} */}
+         
 
         <div className='md:px-5'>
           <ReduxProvider>
-            {!isLogin ? (
-              <div className='md:rounded-lg text-text'>{children}</div>
-            ) : (
-              <>{children}</>
-            )}
+          <Header />
+            <>{children}</>
           </ReduxProvider>
         </div>
         <div className='md:container'></div>
