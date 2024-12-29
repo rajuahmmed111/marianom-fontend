@@ -1,5 +1,5 @@
 'use client';
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../rootReducer';
 
@@ -30,8 +30,8 @@ export const baseApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["User","Follow", "Birthday", "Newmember"],
-  endpoints: (builder) => ({}),
+  tagTypes: ["User","Follow", "Birthday", "Newmember", "ProfileVisitor","GetProfileVisitor"],
+  endpoints: () => ({}),
 });
 
 export default baseApi;

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import LogoImg from "@/assets/logo.jpeg";
 import { IoSettingsOutline } from "react-icons/io5";

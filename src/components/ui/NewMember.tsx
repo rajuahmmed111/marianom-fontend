@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { SlCalender } from "react-icons/sl";
 import birthdayImage from "@/assets/birthday.jpeg";
 import Image from "next/image";
@@ -8,12 +8,11 @@ import {
   useAddFollowMutation,
   useFetchFollowingQuery,
 } from "@/redux/birthdayApi/birthdayApi";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { useSelector } from "react-redux";
 // import { RootState } from "@/redux/store";
 import toast from "react-hot-toast";
 import { RootState } from "@/redux/rootReducer";
-
-
 
 // Define the Member interface
 interface Member {
@@ -30,18 +29,41 @@ interface Member {
   currentLocation: string;
 }
 
+interface DecodedToken extends JwtPayload {
+  id: string;
+  email: string;
+}
+
 const NewMember = () => {
   const { data: newMemberData, isLoading, error } = useGetNewmemberQuery({});
-  const { data: followingData, isFetching: isFetchingFollowing } = useFetchFollowingQuery({});
-  const [addFollow, { isLoading: isFollowing }] = useAddFollowMutation();
+  const { data: followingData, isFetching: isFetchingFollowing } =
+    useFetchFollowingQuery({});
+  const [addFollow] = useAddFollowMutation();
 
-  const currentUserId = useSelector((state: RootState) => state?.auth.user);
-  console.log(currentUserId)
+  const token = useSelector((state: RootState) => state.auth.token);
+  const decodedToken = token ? (jwt.decode(token) as DecodedToken) : null;
+
+  const currentUserId = decodedToken ? decodedToken.id : null;
+  console.log(currentUserId);
   const newMembers: Member[] = newMemberData?.data || [];
-  const followingIds: string[] = followingData?.data?.following.map((user: { id: string }) => user.id) || [];
-  const totalFollowing: number = followingData?.data?.totalFollowing || 0;
+  
+  const followingIds: string[] =
+    followingData?.data?.following.map((user: { id: string }) => user.id) || [];
+  // const totalFollowing: number = followingData?.data?.totalFollowing || 0;
 
-  const handleFollow = async (userId: string) => {
+  const getFollowersForUser = (userId: string) => {
+    const user: { id: string; userName: string } | undefined =
+      followingData?.data?.following.find(
+        (follower: { id: string }) => follower.id === userId
+      );
+    return user ? [user.userName] : []; 
+  };
+
+  const handleFollow = async (
+    userId: string,
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
     if (currentUserId === userId) {
       toast.error("You cannot follow yourself.");
       return;
@@ -123,19 +145,31 @@ const NewMember = () => {
                         ? "text-gray-400  cursor-not-allowed"
                         : "text-[#FEB800]"
                     }`}
-                    onClick={() => handleFollow(member.id)}
+                    onClick={(e) => handleFollow(member.id, e)}
                     disabled={
-                      followingIds.includes(member.id) || currentUserId === member.id
+                      followingIds.includes(member.id) ||
+                      currentUserId === member.id
                     }
                   >
                     {followingIds.includes(member.id)
                       ? "Following"
                       : currentUserId === member.id
-                      ? "Myself"
+                      ? "You"
                       : "Follow"}
                   </button>
                 </h2>
-                <p className="text-gray-300 text-[20px] font-medium">{totalFollowing} Follower</p>
+                {/* Show Follower Count */}
+                {(() => {
+                  const followers = getFollowersForUser(member.id);
+                  return (
+                    <>
+                      <p className="text-gray-300 text-[20px] font-medium">
+                        {followers.length} Follower
+                        {/* {followers.length !== 1 ? "s" : ""} */}
+                      </p>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 

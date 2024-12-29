@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { SlCalender } from "react-icons/sl";
 import birthday from "@/assets/birthdayIcon.png";
@@ -10,8 +10,8 @@ import {
   useGetTodaysBirthdaysQuery,
   usePostBirthdayWishMutation,
 } from "@/redux/birthdayApi/birthdayApi";
-import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 interface BirthdayPerson {
   id: string;
@@ -66,11 +66,11 @@ export default function Birthday() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
   } = useForm();
   const [postBirthdayWish, { isLoading: isPosting }] = usePostBirthdayWishMutation();
 
-  const handlePostWish = async (data: any) => {
+  const handlePostWish = async () => {
     if (!wishMessage) {
       toast.error("Please enter a wish message.");
       return;
@@ -159,7 +159,7 @@ export default function Birthday() {
         >
           <form
             encType="multipart/form-data"
-            onSubmit={handleSubmit((data) => handlePostWish({ ...data, receiverId: selectedPerson.id }))}
+            onSubmit={handleSubmit(handlePostWish)}
           >
             <div
               className="bg-secondary rounded-lg relative w-full sm:w-[90%] md:w-[750px] shadow-xl pt-16 px-6 md:px-20 pb-12 md:pb-28"

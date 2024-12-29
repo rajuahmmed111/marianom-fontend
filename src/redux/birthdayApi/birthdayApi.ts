@@ -41,11 +41,40 @@ export const authApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Follow"],
     }),
+
+    // create profile visitor
+    createProfileVisitor: builder.mutation({
+      query: ({
+        userId,
+        followingId,
+      }: {
+        userId: string;
+        followingId: string;
+      }) => ({
+        url: `/profile-visitors/${userId}`,
+        method: "POST",
+        body: { followingId },
+      }),
+      invalidatesTags: ["ProfileVisitor"],
+    }),
+
+    // get profile visitor
+    getProfileVisitor: builder.query({
+      query: () => ({ 
+        url: `/profile-visitors/my-visitors`, 
+        method: "GET" 
+      }),
+      providesTags: ["GetProfileVisitor"],
+    }),
   }),
 });
 
-export const { useAddFollowMutation,
-    useGetTodaysBirthdaysQuery,
-    usePostBirthdayWishMutation,
-    useGetNewmemberQuery,
-    useFetchFollowingQuery} = authApi;
+export const {
+  useAddFollowMutation,
+  useGetTodaysBirthdaysQuery,
+  usePostBirthdayWishMutation,
+  useGetNewmemberQuery,
+  useFetchFollowingQuery,
+  useCreateProfileVisitorMutation,
+  useGetProfileVisitorQuery
+} = authApi;
