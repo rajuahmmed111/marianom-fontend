@@ -12,14 +12,28 @@ export const authApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ['Post'],
         }),
+
         getPost: builder.query({
             query: () => ({
                 url: '/post',
                 method: "GET",
             }),
             providesTags: ['Post']
+        }),
+        postFavourite: builder.mutation({
+            query: (id) => ({
+                url: `/favorite/${id}`,
+                method: "POST",
+            }),
+            invalidatesTags: ['Post']
+        }),
+        getFavourite: builder.query({
+            query: (id) => ({
+                url: `/favorite/${id}`,
+                method: "GET",
+            }),
+            providesTags: ['Post']
         })
-
 
 
 
@@ -29,6 +43,8 @@ export const authApi = baseApi.injectEndpoints({
 
 export const {
     usePostApiMutation,
-    useGetPostQuery
+    useGetPostQuery,
+    usePostFavouriteMutation,
+    useGetFavouriteQuery,
 
 } = authApi;

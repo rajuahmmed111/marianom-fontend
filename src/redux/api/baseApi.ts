@@ -31,9 +31,14 @@ export const baseApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["User", "Post"],
+  tagTypes: ["User", "Follow", "Birthday", "Newmember", "Post", "Comments"], // Define tags for cache management
   endpoints: (builder) => ({}),
 });
 
 export default baseApi;
 
+
+//   endpoints: (builder) => ({}), // Add API endpoints here
+// });
+
+// export default baseApi;

@@ -71,6 +71,7 @@ const dispatch = useDispatch()
   };
 
   return (
+    <React.Suspense fallback={<div>Loading...</div>}>
     <div
       className='flex justify-center items-center min-h-screen'
       style={{
@@ -123,5 +124,6 @@ const dispatch = useDispatch()
         </form>
       </div>
     </div>
+    </React.Suspense>
   );
 }

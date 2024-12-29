@@ -8,9 +8,10 @@ import {
   MdPhoto,
   MdOutlineVideoLibrary,
   MdFavoriteBorder,
+  MdFavorite,
 } from "react-icons/md";
 import { LuMessageSquareMore } from "react-icons/lu";
-import { FaRegCommentDots } from "react-icons/fa6";
+import { FaRegCommentDots, FaPaperPlane } from "react-icons/fa6";
 import { GoPlus } from "react-icons/go";
 import Modal from "@/components/ui/Modal";
 import UpdateProfileForm from "@/components/ui/UpdateProfileForm";
@@ -22,10 +23,12 @@ import { useGetProfileQuery } from "@/redux/features/authSlice/authApi";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { useGetPostQuery, usePostApiMutation } from "@/redux/features/post/postApi";
+import { useGetFavouriteQuery, useGetPostQuery, usePostApiMutation, usePostFavouriteMutation } from "@/redux/features/post/postApi";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import avatar from "@/assets/avatar.jpg"
+import Videos from "@/components/ui/Videos";
+import { useCommentPostApiMutation } from "@/redux/features/comment/commentApi";
 
 
 interface DecodedToken extends JwtPayload {
@@ -114,10 +117,83 @@ export default function ProfilePage() {
 
 
   const { data: getPost } = useGetPostQuery({})
-  console.log('My all post is', getPost?.data?.meta?.data[0].user);
+  // console.log('My all post is', getPost?.data?.meta?.data[0].user);
 
 
-  const profileurls = getProfile?.data?.profileImage?.url !== null ? getProfile?.data?.profileImage?.url: avatar
+  const profileurls = getProfile?.data?.profileImage?.url !== null ? getProfile?.data?.profileImage?.url : avatar
+
+  const [favoriteStates, setFavoriteStates] = useState<{ [key: string]: boolean }>({});
+  const { data: getFavourite } = useGetFavouriteQuery({})
+  const [postFavourite] = usePostFavouriteMutation()
+  const handleFavoriteClick = async (postId: string) => {
+    console.log("my postId ", postId); // Debugging to confirm postId is a string
+
+    setFavoriteStates((prevState) => ({
+      ...prevState,
+      [postId]: !prevState[postId],
+    }));
+
+    try {
+      await postFavourite(postId); // Ensure postId is sent correctly
+      toast.success("Post favorited successfully!");
+    } catch (error) {
+      console.error("Failed to favorite post:", error);
+      toast.error("Cannot favorite post, please try again.");
+    }
+  };
+  // Initialize favorite states based on fetched favorite data
+  React.useEffect(() => {
+    if (getFavourite?.data) {
+      const initialFavoriteStates: { [key: string]: boolean } = {};
+      getFavourite.data.forEach((fav: any) => {
+        initialFavoriteStates[fav.postId] = true; // Mark the post as favorited
+      });
+      setFavoriteStates(initialFavoriteStates);
+    }
+  }, [getFavourite]);
+
+  // comment
+  const [showModal, setShowModal] = useState(false);
+  const [comment, setComment] = useState("");
+  const [activePostId, setActivePostId] = useState<string | null>(null);
+
+  const handleCommentClick = (postId: string) => {
+    console.log('my post id is', postId);
+    setActivePostId(postId); // Store the active post ID
+    setShowModal(true);
+  };
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setComment("");
+    setActivePostId(null); // Reset the active post ID
+  };
+
+  const [postComment] = useCommentPostApiMutation();
+  const handleSendComment = async () => {
+    if (!activePostId || !comment) {
+      toast.error("Please write a comment before sending.");
+      return;
+    }
+    try {
+      const payload = {
+        id: activePostId,
+        content: comment,
+      };
+      console.log(payload);
+      const res = await postComment(payload);
+      if (res) {
+        console.log('my payload:', payload);
+        toast.success("Comment posted successfully!");
+      } else {
+        toast.error("Cannot post comment.");
+      }
+    } catch (error) {
+      console.error("Error posting comment:", error);
+      toast.error("Cannot post comment.");
+    }
+    console.log("Comment Sent:", comment);
+    handleCloseModal();
+  };
 
 
   return (
@@ -190,7 +266,8 @@ export default function ProfilePage() {
               Photos
             </button>
             <button
-              className={`cursor-pointer flex items-center gap-2 text-base md:text-[20px] ${isTab === "video" ? "text-white" : "text-[#807E7E]"
+              onClick={() => setIsTab("videos")}
+              className={`cursor-pointer flex items-center gap-2 text-base md:text-[20px] ${isTab === "videos" ? "text-white" : "text-[#807E7E]"
                 }`}
             >
               Video
@@ -326,16 +403,13 @@ export default function ProfilePage() {
                   className="text-white border-b border-[#796943] p-4 space-y-4"
                 >
                   <div className="flex items-center gap-4">
-                  
-                    < Image
-                      key={index}
-                      src={post?.user?.profileImage?.url || avatar }
+                    <Image
+                      src={post?.user?.profileImage?.url || avatar}
                       alt={`Post Image ${index + 1}`}
                       width={40}
                       height={40}
                       className="rounded-full"
                     />
-
                     <div>
                       <p className="font-semibold text-base md:text-[20px]">
                         {post.user.firstName}
@@ -346,9 +420,9 @@ export default function ProfilePage() {
                       </p>
                     </div>
                   </div>
-                  <p className="text-sm md:text-base leading-relaxed">
-                    {post.description}
-                  </p>
+
+                  <p className="text-sm md:text-base leading-relaxed">{post.description}</p>
+
                   {post.images && post.images.length > 0 && (
                     <div className="image-gallery flex flex-wrap gap-4">
                       {post.images.map((imageUrl: string, imgIndex: number) => (
@@ -363,12 +437,20 @@ export default function ProfilePage() {
                       ))}
                     </div>
                   )}
+
                   <div className="flex gap-5 text-sm text-gray-300">
-                    <button className="hover:text-yellow-500 flex items-center gap-2 text-base">
-                      <MdFavoriteBorder />
+                    <button
+                      onClick={() => handleFavoriteClick(post.id)} // Pass post ID to identify the specific post
+                      className={`flex items-center gap-2 text-base transition-colors duration-300 ${favoriteStates[post.id] || post?._count?.favoritedBy > 0
+                        ? "text-yellow-500"
+                        : ""
+                        }`}
+                    >
+                      {favoriteStates[post.id] || post?._count?.favoritedBy > 0 ? <MdFavorite /> : <MdFavoriteBorder />}
                       Favorite
                     </button>
-                    <button className="hover:text-yellow-500 flex items-center gap-2 text-base">
+
+                    <button className="hover:text-yellow-500 flex items-center gap-2 text-base" onClick={() => handleCommentClick(post.id)}>
                       <FaRegCommentDots />
                       Comment
                     </button>
@@ -376,18 +458,52 @@ export default function ProfilePage() {
                 </div>
               ))
             ) : (
-              <p>No post available</p>
+              <div className="text-center text-gray-500">
+                No Post found.
+              </div>
+            )}
+            {showModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div className="bg-[#1F1F1F] rounded-lg shadow-md p-6 w-[90%] max-w-md text-white">
+                  <h2 className="text-lg font-semibold mb-4">Write a Comment</h2>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="text"
+                      placeholder="Write something about the post..."
+                      value={comment}
+                      // {...register("content")}
+                      onChange={(e) => setComment(e.target.value)}
+                      className="flex-1 px-4 py-2 rounded-lg border border-gray-700 bg-transparent text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    />
+                    <button
+                      onClick={handleSendComment} // Send the comment
+                      className="p-3 bg-yellow-500 rounded-lg text-white hover:bg-yellow-600"
+                    >
+                      <FaPaperPlane size={20} />
+                    </button>
+                  </div>
+                  <button
+                    onClick={handleCloseModal}
+                    className="mt-4 text-sm text-gray-400 hover:underline"
+                  >
+                    Close
+                  </button>
+
+                  <div>
+
+                  </div>
+
+                </div>
+              </div>
             )}
 
 
-            {/* {[...Array(3)].map((_, index) => (
-           
-            ))} */}
           </div>
         </div>
       )}
 
       {isTab === "photos" && <Photos id={id} />}
+      {isTab === "videos" && <Videos id={id} />}
 
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>

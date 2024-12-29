@@ -5,6 +5,7 @@ import Background from '@/assets/background/bg.png';
 import React from 'react';
 import Header from '@/components/common/Header';
 import ReduxProvider from '@/redux/api/provider/ReduxProvider';
+// import { Toaster } from 'react-hot-toast';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -28,6 +29,10 @@ const pathName = typeof window !== 'undefined' ? window.location.pathname : '';
 
 const isLogin = pathName === '/login';
 
+// const pathName = typeof window !== 'undefined' ? window.location.pathname : '';
+
+// const isLogin = pathName === '/login';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -48,21 +53,21 @@ export default function RootLayout({
           backgroundAttachment: 'fixed',
         }}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <ReduxProvider>
-      
+        <ReduxProvider>
+
           <div className=''>
             <Header />
           </div>
 
-        <div className='md:px-5'>
+          <div className='md:px-5'>
             {!isLogin ? (
               <div className='md:rounded-lg text-text'>{children}</div>
-             ) : ( 
-              <>{children}</> 
-             )} 
-        </div>
-        <div className='md:container'></div>
-          </ReduxProvider>
+            ) : (
+              <>{children}</>
+            )}
+          </div>
+          <div className='md:container'></div>
+        </ReduxProvider>
       </body>
     </html>
   );

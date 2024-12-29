@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     domains: ['192.168.11.253', 'picsum.photos', 'avatar.iran.liara.run'],
     // Disable the built-in image optimization when using an external CDN or serving images
     unoptimized: false,
+    // domains: ['localhost', 'picsum.photos', '192.168.11.253'],
 
     // Allow loading images from all origins
     remotePatterns: [

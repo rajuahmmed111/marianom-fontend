@@ -8,15 +8,72 @@ import { FaPaperPlane, FaRegCommentDots } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import profileImage from "@/assets/profile.png";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import { useAddFollowMutation } from "@/redux/birthdayApi/birthdayApi";
+import { RootState } from "@/redux/rootReducer";
 
 const NeearByOnline = () => {
   const [showModal, setShowModal] = useState(false);
   const [comment, setComment] = useState("");
+  const [followingUsers, setFollowingUsers] = useState<string[]>([]);
+
+  const [addFollow, { isLoading }] = useAddFollowMutation();
+
+  // Get the current user ID from the auth slice
+  const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
+  // console.log(currentUserId)
 
   const onlineUsers = Array(6).fill({
     image: onlineImage,
     name: "User",
   });
+
+  const posts = [
+    {
+      id: "676e4bc88f1b6b3d1f6d1693",
+      name: "Devid Saifur",
+      appreciation: "16k appreciation",
+      recent: true,
+      message:
+        "I'm overloading on sweets today with the three C’s: Cupcakes, Cookies, and Candy.",
+      images: Array(4).fill(postImage),
+    },
+    {
+      id: currentUserId, 
+      name: "John Doe",
+      appreciation: "12k appreciation",
+      recent: true,
+      message: "Enjoying a lovely day with friends and family!",
+      images: [postImage],
+    },
+  ];
+
+  const handleFollow = async (followingId: string) => {
+    if (followingId === currentUserId) {
+      alert("You cannot follow yourself!");
+      return;
+    }
+
+    // Prevent duplicate follow requests
+    if (followingUsers.includes(followingId)) {
+      console.log("You are already following this user.");
+      return;
+    }
+
+    try {
+      const response = await addFollow(followingId)
+      console.log("Followed successfully:", response);
+
+      // Add the followed user ID to the local state
+      setFollowingUsers((prev) => [...prev, followingId]);
+    } catch (error: any) {
+      if (error?.data?.errorMessages?.[0]?.message) {
+        alert(error.data.errorMessages[0].message); // Show backend error message
+      } else {
+        console.error("Failed to follow user:", error);
+      }
+    }
+  };
 
   const handleCommentClick = () => {
     setShowModal(true);
@@ -31,27 +88,6 @@ const NeearByOnline = () => {
     console.log("Comment Sent:", comment);
     handleCloseModal();
   };
-
-  const posts = [
-    {
-      id: 1,
-      name: "Devid Saifur",
-      appreciation: "16k appreciation",
-      recent: true,
-      message:
-        "I'm overloading on sweets today with the three C’s: Cupcakes, Cookies, and Candy.",
-      images: Array(4).fill(postImage),
-    },
-    {
-      id: 2,
-      name: "Devid Saifur",
-      appreciation: "16k appreciation",
-      recent: true,
-      message:
-        "I'm overloading on sweets today with the three C’s: Cupcakes, Cookies, and Candy.",
-      images: [postImage],
-    },
-  ];
 
   return (
     <div className="flex-1 bg-primary p-4 md:p-6">
@@ -113,9 +149,24 @@ const NeearByOnline = () => {
               <div>
                 <h3 className="text-white font-medium text-[18px] sm:text-[20px]">
                   {post.name}
-                  <span className="ml-2 text-sm cursor-pointer text-yellow-500">
-                    + Follow
-                  </span>
+                  {post.id === currentUserId ? (
+                    <span className="ml-2 text-sm text-gray-400 cursor-default">
+                      You
+                    </span>
+                  ) : followingUsers.includes(post.id) ? (
+                    <span className="ml-2 text-sm text-gray-400 cursor-default">
+                      Following
+                    </span>
+                  ) : (
+                    <span
+                      className={`ml-2 text-sm cursor-pointer ${
+                        isLoading ? "text-gray-400" : "text-yellow-500"
+                      }`}
+                      onClick={() => handleFollow(post.id)}
+                    >
+                      + Follow
+                    </span>
+                  )}
                 </h3>
                 <p className="text-gray-300 font-medium">{post.appreciation}</p>
                 <p className="text-gray-400 flex items-center gap-2 text-sm">

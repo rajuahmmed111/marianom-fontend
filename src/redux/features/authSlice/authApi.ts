@@ -1,4 +1,4 @@
-import baseApi from '@/redux/api/baseApi';
+import { baseApi } from '@/redux/api/baseApi';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -94,6 +94,12 @@ export const authApi = baseApi.injectEndpoints({
         url: `/post/user/photos/${id}`,
         method: 'GET'
       })
+    }),
+    getVideoByUser: builder.query({
+      query: (id) => ({
+        url: `/post/user/videos/${id}`,
+        method: 'GET'
+      })
     })
 
 
@@ -113,5 +119,6 @@ export const {
   useGetProfileQuery,
   useChangePasswordMutation,
   useUpdateProfileImageMutation,
-  useGetPhotoByUserQuery
+  useGetPhotoByUserQuery,
+  useGetVideoByUserQuery
 } = authApi;
