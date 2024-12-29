@@ -1,13 +1,114 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import profileImage from "@/assets/profile.png";
+// import profileImage from "@/assets/profile.png";
 import edit from "@/assets/edit.png";
+import { useForm } from "react-hook-form";
+import { useChangePasswordMutation, useUpdateProfileImageMutation, useUpdateUserMutation } from "@/redux/features/authSlice/authApi";
+import { toast } from "sonner";
+// import avatar from "@/assets/avatar.jpg"
 
-export default function UpdateProfileForm() {
+
+interface UpdateProfileFormProps {
+  getProfile: any;
+  id: string
+}
+
+export default function UpdateProfileForm({ getProfile, id }: UpdateProfileFormProps) {
   // State to toggle visibility for each password field
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  console.log(getProfile);
+
+
+  const { register, handleSubmit, setValue, reset } = useForm({
+    defaultValues: {
+      firstName: getProfile?.data?.firstName || "",
+      lastName: getProfile?.data?.lastName || "",
+      oldPassword: "",
+      newPassword: "",
+      profileImage: ""
+    },
+  });
+
+
+  const [updateUser] = useUpdateUserMutation()
+  const [changePassword] = useChangePasswordMutation()
+
+  const handleChangepassword = async (data: any) => {
+    try {
+      if (data.oldPassword && data.newPassword) {
+        const res = await changePassword(data);
+        if (res) {
+          toast.success("Password changed successfully");
+          reset()
+        } else {
+          toast.error("Cannot change password");
+        }
+      }
+    } catch {
+      toast.error("An error occurred");
+    }
+  }
+  const handlechangeInfo = async (data: any) => {
+    try {
+
+      const res = await updateUser(data);
+      if (res) {
+        toast.success("Password changed successfully");
+      } else {
+        toast.error("Cannot change password");
+      }
+
+    } catch {
+      toast.error("An error occurred");
+    }
+  }
+  const [images, setImages] = useState<File[]>([]);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  console.log(images);
+
+  const [updateProfile] = useUpdateProfileImageMutation()
+
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+
+    if (imageFiles.length === 0) {
+      toast.error("Please select a valid image file.");
+      return;
+    }
+
+    setImages(imageFiles);
+
+    // Generate a preview for the selected image
+    setPreviewImage(URL.createObjectURL(imageFiles[0]));
+
+    // Upload the image to the server
+    try {
+      const formData = new FormData();
+      formData.append("profileImage", imageFiles[0]);
+
+      const res = await updateProfile({ id, data: formData });
+
+      if (res?.data) {
+        toast.success("Profile image updated successfully!");
+        // Update preview with server response, if required
+        setPreviewImage(res.data.profileImage);
+      } else {
+        toast.error("Failed to update profile image.");
+      }
+    } catch (error) {
+      console.error("Error updating profile image:", error);
+      toast.error("An error occurred while updating the profile image.");
+    }
+  };
+
+
+  // const profileurls = getProfile?.data?.profileImage?.url !== null ? getProfile?.data?.profileImage?.url : avatar
+
+
 
   return (
     <div className="text-white p-4 md:p-6">
@@ -17,20 +118,34 @@ export default function UpdateProfileForm() {
 
       {/* Profile Picture */}
       <div className="flex justify-center mb-6">
-        <div className="relative w-32 h-32">
-          <Image
-            src={profileImage}
-            alt="Profile"
-            className="rounded-full w-52  object-cover"
-          />
-          <button className="absolute bottom-0 right-0 bg-yellow-500 text-black px-2 py-1 rounded-md text-xs md:text-sm hover:bg-yellow-600">
-            Change
-          </button>
-        </div>
+        <form encType="multipart/form-data">
+          <div className="relative w-32 h-32">
+            {/* Show preview if available, otherwise fallback to default avatar */}
+            <Image
+              src={previewImage || getProfile?.data?.profileImage?.url || "/avatar-placeholder.png"}
+              alt="Profile"
+              className="rounded-full object-cover"
+              width={150}
+              height={150}
+            />
+            <label
+              className="absolute bottom-0 right-0 bg-yellow-500 text-black px-2 py-1 rounded-md text-xs md:text-sm hover:bg-yellow-600 cursor-pointer"
+            >
+              Change
+              <input
+                type="file"
+                accept="image/*"
+                multiple={false}
+                className="hidden"
+                onChange={handlePhotoUpload}
+              />
+            </label>
+          </div>
+        </form>
       </div>
 
       {/* Form Fields */}
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={handleSubmit(handlechangeInfo)}>
         <h1 className="text-base md:text-lg font-medium mb-4 capitalize">
           Change owner name
         </h1>
@@ -42,10 +157,13 @@ export default function UpdateProfileForm() {
             </label>
             <input
               type="text"
-              placeholder="Saifur"
-              className="w-full  bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
+              {...register("firstName")}
+              required
+              onChange={(e) => setValue("firstName", e.target.value)} // Update the form value dynamically
+              defaultValue={getProfile?.data?.firstName || ""} // Set default value for initial rendering
+              className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
             />
-            <Image src={edit} alt="edit image" className="absolute top-[60%] right-2"/>
+            <Image src={edit} alt="edit image" className="absolute top-[60%] right-2" />
           </div>
 
           {/* Last Name */}
@@ -53,10 +171,13 @@ export default function UpdateProfileForm() {
             <label className="block mb-1 text-sm md:text-base">Last Name</label>
             <input
               type="text"
-              placeholder="Rahman"
+              {...register("lastName")}
+              required
+              onChange={(e) => setValue("lastName", e.target.value)} // Update the form value dynamically
+              defaultValue={getProfile?.data?.lastName || ""} // Set default value for initial rendering
               className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
             />
-            <Image src={edit} alt="edit image" className="absolute top-[60%] right-2"/>
+            <Image src={edit} alt="edit image" className="absolute top-[60%] right-2" />
           </div>
 
           {/* Email address */}
@@ -66,16 +187,26 @@ export default function UpdateProfileForm() {
             </label>
             <input
               type="email"
-              placeholder="test@gmail.com"
+              value={getProfile?.data?.email || ''}
               className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
+              disabled
             />
-          <Image src={edit} alt="edit image" className="absolute top-[60%] right-2"/>
+            <Image src={edit} alt="edit image" className="absolute top-[60%] right-2" />
           </div>
-        </div>
 
-        {/* Change Password Section */}
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-yellow-500 text-black py-2 md:py-3 rounded-md font-semibold hover:bg-yellow-600 transition"
+        >
+          Save Update
+        </button>
+      </form>
+
+      {/* Change Password Section */}
+      <form onSubmit={handleSubmit(handleChangepassword)}>
         <div>
-          <h1 className="text-base md:text-lg font-medium mb-4">
+          <h1 className="text-base md:text-lg font-medium mb-4 mt-2">
             Change Password
           </h1>
           {/* Current Password */}
@@ -86,6 +217,8 @@ export default function UpdateProfileForm() {
             <input
               type={showCurrentPassword ? "text" : "password"}
               placeholder="••••••••••"
+              {...register("oldPassword")}
+              onChange={(e) => setValue("oldPassword", e.target.value)}
               className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
             />
             <button
@@ -109,6 +242,8 @@ export default function UpdateProfileForm() {
             <input
               type={showNewPassword ? "text" : "password"}
               placeholder="••••••••••"
+              {...register("newPassword")}
+              onChange={(e) => setValue("newPassword", e.target.value)}
               className="w-full bg-[#483C19] text-white p-2 md:p-3 rounded-md border border-gray-600 focus:outline-none"
             />
             <button
@@ -124,7 +259,7 @@ export default function UpdateProfileForm() {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-yellow-500 text-black py-2 md:py-3 rounded-md font-semibold hover:bg-yellow-600 transition"
+          className="w-full mt-3 bg-yellow-500 text-black py-2 md:py-3 rounded-md font-semibold hover:bg-yellow-600 transition"
         >
           Save Update
         </button>

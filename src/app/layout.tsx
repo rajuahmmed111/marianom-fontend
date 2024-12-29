@@ -29,6 +29,10 @@ export const metadata: Metadata = {
 
 // const isLogin = pathName === '/login';
 
+const pathName = typeof window !== 'undefined' ? window.location.pathname : '';
+
+const isLogin = pathName === '/login';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,21 +53,21 @@ export default function RootLayout({
           backgroundAttachment: 'fixed',
         }}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* {isLogin && (
+          <ReduxProvider>
+      
           <div className=''>
-          
+            <Header />
           </div>
-        )} */}
-         
 
         <div className='md:px-5'>
-          <ReduxProvider>
-          <Header />
-            <>{children}</>
-            <Toaster/>
-          </ReduxProvider>
+            {!isLogin ? (
+              <div className='md:rounded-lg text-text'>{children}</div>
+             ) : ( 
+              <>{children}</> 
+             )} 
         </div>
         <div className='md:container'></div>
+          </ReduxProvider>
       </body>
     </html>
   );

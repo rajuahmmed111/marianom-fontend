@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
@@ -6,37 +7,51 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { MdClose, MdMenu } from "react-icons/md";
-import { useSelector, useDispatch } from "react-redux";
+// import { useLogoutMutation } from "@/redux/features/authSlice/authApi";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 import { logout } from "@/redux/features/authSlice/authSlice";
+
+// import { jwtDecode } from "jwt-decode";
+
+
+interface DecodedToken extends JwtPayload {
+  id: string;
+  email: string
+}
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false); // Ensures client-only rendering
-  const route = usePathname();
+  const pathname = usePathname();
+  const router = useRouter();
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  console.log("isAuthenticated", isAuthenticated);
-  const { user } = useSelector((state: RootState) => state.auth);
-  const userId = user;
-  console.log("User ID:", userId);
-  useEffect(() => {
-    setIsClient(true); // Enable client-side rendering
-  }, []);
-
-  // Prevent SSR rendering for specific routes and ensure client-side rendering
-  if (!isClient || /^\/(sign-up|login|forgetPassword|verifyCode|resetPassword)/.test(route)) {
-    return null;
-  }
+  
+  if (/^\/(singUp|login|forgetPassword|verifyCode|resetPassword)/.test(pathname)) return null;
 
   const toggleMenu: React.MouseEventHandler<HTMLButtonElement> = () => {
     setIsMenuOpen((prevState) => !prevState);
   };
 
-  const handleLogout = () => {
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  console.log("isAuthenticated", isAuthenticated);
+
+  
+  const handleLogout = async() => {
     dispatch(logout());
-    setIsMenuOpen(false);
-  };
+    router.push("/");
+    toast.success('log out successfully.')
+
+
+  }
+  const token = useSelector((state: RootState) => state.auth.token)
+  // console.log('my token is', token);
+
+  const decodedToken = token ? (jwt.decode(token) as DecodedToken) : null;
+  
 
   return (
     <header className="fixed top-0 left-0 w-full z-[200] px-5 md:px-0">
@@ -102,24 +117,51 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Right Section (Login/Logout & Settings Buttons) */}
-          <div className="flex items-center gap-8">
-            <div className="flex items-center border-r border-gray-300 pr-4">
-              {isAuthenticated ? (
-                <button
-                  onClick={handleLogout}
-                  className="md:flex items-center px-4 py-2 text-white bg-red-900 rounded-md hover:bg-red-700 transition hidden"
-                >
-                  Logout
-                </button>
-              ) : (
-                <Link href="/login">
-                  <button className="md:flex items-center px-4 py-2 text-white bg-blue-900 rounded-md hover:bg-blue-700 transition hidden">
-                    Login
+            {/* Right Section (Logout & Settings Buttons) */}
+            <div className="flex items-center gap-8">
+              <div className="flex items-center border-r border-gray-300 pr-4">
+                {decodedToken ? (
+                  <button onClick={handleLogout} className="md:flex items-center px-4 py-2 text-white bg-red-900 rounded-md transition hidden">
+                    <span className="mr-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-5 h-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.75 9V5.25a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v13.5a2.25 2.25 0 002.25 2.25h6.75a2.25 2.25 0 002.25-2.25V15m-3-6l3 3m0 0l-3 3m3-3H9"
+                        />
+                      </svg>
+                    </span>
+                    Logout
                   </button>
-                </Link>
-              )}
-            </div>
+                ) : (
+                    <Link href='/login'  className="md:flex items-center px-4 py-2 text-white bg-[#725713] rounded-md transition hidden">
+                      <span className="mr-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.75 9V5.25a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v13.5a2.25 2.25 0 002.25 2.25h6.75a2.25 2.25 0 002.25-2.25V15m-3-6l3 3m0 0l-3 3m3-3H9"
+                          />
+                        </svg>
+                      </span>
+                      Log in
+                    </Link>
+               )}
+              </div>
 
             {/* Settings Button */}
             {isAuthenticated && (

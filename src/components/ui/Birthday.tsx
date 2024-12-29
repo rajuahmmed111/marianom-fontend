@@ -77,7 +77,7 @@ export default function Birthday() {
     }
     const formData = new FormData();
     formData.append("receiverId", selectedPerson?.id || "");
-    formData.append("wishMessage", wishMessage);
+    formData.append("text", wishMessage);
     if (selectedImage) {
       formData.append("birthdayImage", selectedImage);
     }
