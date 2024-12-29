@@ -16,13 +16,16 @@ const Header = () => {
   const route = usePathname();
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-
+  console.log("isAuthenticated", isAuthenticated);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const userId = user;
+  console.log("User ID:", userId);
   useEffect(() => {
     setIsClient(true); // Enable client-side rendering
   }, []);
 
   // Prevent SSR rendering for specific routes and ensure client-side rendering
-  if (!isClient || /^\/(signUp|login|forgetPassword|verifyCode|resetPassword)/.test(route)) {
+  if (!isClient || /^\/(sign-up|login|forgetPassword|verifyCode|resetPassword)/.test(route)) {
     return null;
   }
 

@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-"use client";
-import Cookies from "js-cookie";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "../rootReducer";
+'use client';
+import Cookies from 'js-cookie';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../rootReducer';
+
 
 const baseUrl = "http://192.168.11.253:3018/api/v1";
 
 if (!baseUrl) {
-  throw new Error("Environment variable NEXT_PUBLIC_BASE_URL is not set");
+  throw new Error('Environment variable NEXT_PUBLIC_BASE_URL is not set');
 }
 
 export const baseApi = createApi({
@@ -16,54 +16,23 @@ export const baseApi = createApi({
     baseUrl: "http://192.168.11.253:3018/api/v1",
     prepareHeaders: (headers, { getState }) => {
       const state = getState() as RootState;
-      const authToken = state.auth.token;
+      const authToken = state.auth.token; // Token from Redux store
 
-      if (authToken) {
-        headers.set("Authorization", `${authToken}`);
+      const searchParams = new URLSearchParams(window.location.search);
+      const tokenFromURL = searchParams.get("token"); // Token from URL query params
+
+      // Prioritize token from URL over Redux store
+      const finalToken = tokenFromURL || authToken;
+
+      if (finalToken) {
+        headers.set("Authorization", `${finalToken}`); // Add token to the Authorization header
       }
       return headers;
     },
   }),
-
-  tagTypes: ["User", "Follow", "Birthday"],
-
-  endpoints: (builder) => ({
-    addFollow: builder.mutation({
-      query: (followData: { followerId: string; followingId: string }) => ({
-        url: "/follow",
-        method: "POST",
-        body: followData,
-      }),
-      invalidatesTags: ["Follow"],
-    }),
-
-    getTodaysBirthdays: builder.query({
-      query: () => "/birthday/todays-birthdays",
-      providesTags: ["Birthday"],
-    }),
-
-    postBirthdayWish: builder.mutation({
-      query: (wishData: { userName: string; wishMessage: string; image?: File }) => {
-        const formData = new FormData();
-        formData.append("userName", wishData.userName);
-        formData.append("wishMessage", wishData.wishMessage);
-        if (wishData.image) {
-          formData.append("image", wishData.image);
-        }
-
-        return {
-          url: "/birthday",
-          method: "POST",
-          body: formData,
-        };
-      },
-      invalidatesTags: ["Birthday"],
-    }),
-  }),
+  tagTypes: ["User","Follow", "Birthday", "Newmember"],
+  endpoints: (builder) => ({}),
 });
 
-export const {
-  useAddFollowMutation,
-  useGetTodaysBirthdaysQuery,
-  usePostBirthdayWishMutation,
-} = baseApi;
+export default baseApi;
+

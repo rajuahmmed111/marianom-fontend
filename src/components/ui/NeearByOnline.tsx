@@ -9,7 +9,7 @@ import { FaRegEdit } from "react-icons/fa";
 import profileImage from "@/assets/profile.png";
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import { useAddFollowMutation } from "@/redux/api/baseApi";
+import { useAddFollowMutation } from "@/redux/birthdayApi/birthdayApi";
 import { RootState } from "@/redux/rootReducer";
 
 const NeearByOnline = () => {
@@ -21,6 +21,7 @@ const NeearByOnline = () => {
 
   // Get the current user ID from the auth slice
   const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
+  // console.log(currentUserId)
 
   const onlineUsers = Array(6).fill({
     image: onlineImage,
@@ -60,10 +61,7 @@ const NeearByOnline = () => {
     }
 
     try {
-      const response = await addFollow({
-        followerId: currentUserId,
-        followingId,
-      }).unwrap();
+      const response = await addFollow(followingId)
       console.log("Followed successfully:", response);
 
       // Add the followed user ID to the local state

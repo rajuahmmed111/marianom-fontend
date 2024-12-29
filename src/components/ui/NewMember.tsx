@@ -1,15 +1,75 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { SlCalender } from "react-icons/sl";
 import birthdayImage from "@/assets/birthday.jpeg";
 import Image from "next/image";
+import {
+  useGetNewmemberQuery,
+  useAddFollowMutation,
+  useFetchFollowingQuery,
+} from "@/redux/birthdayApi/birthdayApi";
+import { useSelector } from "react-redux";
+// import { RootState } from "@/redux/store";
+import toast from "react-hot-toast";
+import { RootState } from "@/redux/rootReducer";
+
+
+
+// Define the Member interface
+interface Member {
+  id: string;
+  userName: string;
+  email: string;
+  profileImage: {
+    url: string;
+    altText?: string;
+  } | null;
+  firstName: string;
+  lastName: string;
+  identifier: string;
+  currentLocation: string;
+}
 
 const NewMember = () => {
-  const newMembers = Array(6).fill({
-    name: "Devid Saifur",
-    followers: "02 Followers",
-    tag: "Gainer",
-    image: birthdayImage, // Replace with dynamic images
-  });
+  const { data: newMemberData, isLoading, error } = useGetNewmemberQuery({});
+  const { data: followingData, isFetching: isFetchingFollowing } = useFetchFollowingQuery({});
+  const [addFollow, { isLoading: isFollowing }] = useAddFollowMutation();
+
+  const currentUserId = useSelector((state: RootState) => state?.auth.user);
+  console.log(currentUserId)
+  const newMembers: Member[] = newMemberData?.data || [];
+  const followingIds: string[] = followingData?.data?.following.map((user: { id: string }) => user.id) || [];
+  const totalFollowing: number = followingData?.data?.totalFollowing || 0;
+
+  const handleFollow = async (userId: string) => {
+    if (currentUserId === userId) {
+      toast.error("You cannot follow yourself.");
+      return;
+    }
+
+    if (followingIds.includes(userId)) {
+      toast.error("You are already following this user.");
+      return;
+    }
+
+    try {
+      await addFollow(userId).unwrap();
+      toast.success("Following successful!");
+    } catch (error) {
+      console.error("Failed to follow:", error);
+      toast.error("Failed to follow. Please try again.");
+    }
+  };
+
+  if (isLoading || isFetchingFollowing) {
+    return <p className="text-white text-center">Loading new members...</p>;
+  }
+
+  if (error) {
+    return (
+      <p className="text-red-500 text-center">Failed to load new members.</p>
+    );
+  }
 
   return (
     <div className="bg-primary flex-1 min-h-screen p-4 md:p-6">
@@ -17,7 +77,8 @@ const NewMember = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5 mb-6 border-b-4 border-border-primary pb-6">
         <div>
           <h1 className="text-white text-2xl md:text-3xl font-bold">
-            New Members <span className="text-yellow-300">(12)</span>
+            New Members{" "}
+            <span className="text-yellow-300">({newMembers.length})</span>
           </h1>
           <p className="text-gray-100 text-sm md:text-base">
             Updates from everyone
@@ -26,7 +87,9 @@ const NewMember = () => {
         <div className="border border-border-primary w-full sm:w-[180px] text-white p-2 rounded-lg flex items-center justify-between">
           <div>
             <p className="text-[14px]">Date</p>
-            <p className="font-bold text-[14px]">12 August 2024</p>
+            <p className="font-bold text-[14px]">
+              {new Date().toLocaleDateString()}
+            </p>
           </div>
           <SlCalender className="text-[18px]" />
         </div>
@@ -34,48 +97,52 @@ const NewMember = () => {
 
       {/* Member Cards */}
       <div className="space-y-4">
-        {newMembers.map((member, index) => (
+        {newMembers.slice(0, 20).map((member) => (
           <div
-            key={index}
+            key={member.id}
             className="bg-[#58481F91] p-4 rounded-lg shadow-md flex flex-col md:flex-row items-center justify-between gap-4"
           >
             {/* Left Section */}
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 w-full">
+            <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6 w-full">
               {/* Profile Image */}
               <Image
-                src={member.image}
-                alt={member.name}
+                src={member.profileImage?.url || birthdayImage}
+                alt={
+                  member.profileImage?.altText ||
+                  member.userName ||
+                  "New member"
+                }
                 className="w-[80px] h-[80px] md:w-[120px] md:h-[120px] rounded-full object-cover"
               />
               <div className="text-center md:text-left">
                 <h2 className="text-white font-bold text-lg md:text-2xl">
-                  {member.name}
-                  <span className="text-[#FEB800] font-medium ml-4 cursor-pointer text-sm md:text-base">
-                    + Follow
-                  </span>
+                  {member.firstName} {member.lastName}
+                  <button
+                    className={`ml-4 font-medium text-sm md:text-base px-4 py-2 rounded-md ${
+                      followingIds.includes(member.id)
+                        ? "text-gray-400  cursor-not-allowed"
+                        : "text-[#FEB800]"
+                    }`}
+                    onClick={() => handleFollow(member.id)}
+                    disabled={
+                      followingIds.includes(member.id) || currentUserId === member.id
+                    }
+                  >
+                    {followingIds.includes(member.id)
+                      ? "Following"
+                      : currentUserId === member.id
+                      ? "Myself"
+                      : "Follow"}
+                  </button>
                 </h2>
-                <p className="text-[#98A2B3] text-base md:text-lg font-medium mt-1">
-                  {member.followers}
-                </p>
-
-                {/* Follower Images */}
-                <div className="flex justify-center md:justify-start mt-2">
-                  {[...Array(3)].map((_, idx) => (
-                    <Image
-                      key={idx}
-                      src={member.image}
-                      alt="follower"
-                      className="w-8 h-8 md:w-9 md:h-9 rounded-full border border-[#4E3916] -ml-2"
-                    />
-                  ))}
-                </div>
+                <p className="text-gray-300 text-[20px] font-medium">{totalFollowing} Follower</p>
               </div>
             </div>
 
             {/* Right Tag */}
             <div>
               <span className="bg-[#58481F] text-white px-4 py-2 text-sm md:text-base rounded-md font-medium">
-                {member.tag}
+                {member.identifier}
               </span>
             </div>
           </div>

@@ -5,6 +5,7 @@ import Background from '@/assets/background/bg.png';
 import React from 'react';
 import Header from '@/components/common/Header';
 import ReduxProvider from '@/redux/api/provider/ReduxProvider';
+import { Toaster } from 'react-hot-toast';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -59,6 +60,7 @@ export default function RootLayout({
           <ReduxProvider>
           <Header />
             <>{children}</>
+            <Toaster/>
           </ReduxProvider>
         </div>
         <div className='md:container'></div>
