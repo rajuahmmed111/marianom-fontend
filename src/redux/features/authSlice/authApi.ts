@@ -89,6 +89,12 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['User'],
     }),
+    getPhotoByUser: builder.query({
+      query: (id) => ({
+        url: `/post/user/photos/${id}`,
+        method: 'GET'
+      })
+    })
 
 
     
@@ -106,5 +112,6 @@ export const {
   useLogoutMutation,
   useGetProfileQuery,
   useChangePasswordMutation,
-  useUpdateProfileImageMutation
+  useUpdateProfileImageMutation,
+  useGetPhotoByUserQuery
 } = authApi;

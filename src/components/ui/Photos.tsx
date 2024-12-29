@@ -8,8 +8,9 @@ import photo3 from "@/assets/photos/photo-3.png";
 import photo4 from "@/assets/photos/photo-4.png";
 import photo5 from "@/assets/photos/photo-5.png";
 import photo6 from "@/assets/photos/photo-6.png";
+import { useGetPhotoByUserQuery } from "@/redux/features/authSlice/authApi";
 
-export default function Photos() {
+export default function Photos(id: any) {
   // Array of photos
   const photos = [
     photo1,
@@ -18,7 +19,7 @@ export default function Photos() {
     photo4,
     photo5,
     photo6,
-    photo1, 
+    photo1,
     photo2,
     photo3,
     photo4,
@@ -30,13 +31,18 @@ export default function Photos() {
     photo4,
     photo5,
     photo6,
-    photo1, 
+    photo1,
     photo2,
     photo3,
     photo4,
     photo5,
     photo6,
   ];
+
+  const userId = id.id
+  const { data: getPhoto } = useGetPhotoByUserQuery( userId )
+  console.log('my id is', getPhoto?.data);
+
 
   return (
     <div className="container mx-auto p-5">

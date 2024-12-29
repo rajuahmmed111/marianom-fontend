@@ -387,7 +387,7 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {isTab === "photos" && <Photos />}
+      {isTab === "photos" && <Photos id={id} />}
 
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>

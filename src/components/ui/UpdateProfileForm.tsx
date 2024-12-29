@@ -6,7 +6,7 @@ import edit from "@/assets/edit.png";
 import { useForm } from "react-hook-form";
 import { useChangePasswordMutation, useUpdateProfileImageMutation, useUpdateUserMutation } from "@/redux/features/authSlice/authApi";
 import { toast } from "sonner";
-import avatar from "@/assets/avatar.jpg"
+// import avatar from "@/assets/avatar.jpg"
 
 
 interface UpdateProfileFormProps {
@@ -65,6 +65,7 @@ export default function UpdateProfileForm({ getProfile, id }: UpdateProfileFormP
     }
   }
   const [images, setImages] = useState<File[]>([]);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   console.log(images);
 
   const [updateProfile] = useUpdateProfileImageMutation()
@@ -73,22 +74,28 @@ export default function UpdateProfileForm({ getProfile, id }: UpdateProfileFormP
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
     const imageFiles = files.filter((file) => file.type.startsWith("image/"));
-    setImages(imageFiles);
 
     if (imageFiles.length === 0) {
       toast.error("Please select a valid image file.");
       return;
     }
 
+    setImages(imageFiles);
+
+    // Generate a preview for the selected image
+    setPreviewImage(URL.createObjectURL(imageFiles[0]));
+
     // Upload the image to the server
     try {
       const formData = new FormData();
       formData.append("profileImage", imageFiles[0]);
+
       const res = await updateProfile({ id, data: formData });
 
       if (res?.data) {
         toast.success("Profile image updated successfully!");
-        reset({ ...getProfile?.data, profileImage: res.data.profileImage });
+        // Update preview with server response, if required
+        setPreviewImage(res.data.profileImage);
       } else {
         toast.error("Failed to update profile image.");
       }
@@ -111,31 +118,29 @@ export default function UpdateProfileForm({ getProfile, id }: UpdateProfileFormP
 
       {/* Profile Picture */}
       <div className="flex justify-center mb-6">
-        <form encType="multipart/form-data" >
-        <div className="relative w-32 h-32">
-          <Image
-            src={avatar}
-            alt="Profile"
-            className="rounded-full  object-cover"
-            width={150}
-            height={150}
-          />
-          <label
-            // type="button"
-            className="absolute bottom-0 right-0 bg-yellow-500 text-black px-2 py-1 rounded-md text-xs md:text-sm hover:bg-yellow-600 cursor-pointer"
-          >
-            Change
-            <input
-              type="file"
-              accept="image/*"
-              multiple={false}
-              className="hidden"
-              {...register("profileImage")}
-              onChange={handlePhotoUpload}
+        <form encType="multipart/form-data">
+          <div className="relative w-32 h-32">
+            {/* Show preview if available, otherwise fallback to default avatar */}
+            <Image
+              src={previewImage || getProfile?.data?.profileImage?.url || "/avatar-placeholder.png"}
+              alt="Profile"
+              className="rounded-full object-cover"
+              width={150}
+              height={150}
             />
-          </label>
-        </div>
-
+            <label
+              className="absolute bottom-0 right-0 bg-yellow-500 text-black px-2 py-1 rounded-md text-xs md:text-sm hover:bg-yellow-600 cursor-pointer"
+            >
+              Change
+              <input
+                type="file"
+                accept="image/*"
+                multiple={false}
+                className="hidden"
+                onChange={handlePhotoUpload}
+              />
+            </label>
+          </div>
         </form>
       </div>
 
