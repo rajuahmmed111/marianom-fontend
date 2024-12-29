@@ -1,4 +1,5 @@
 import { baseApi } from "@/redux/api/baseApi";
+import { use } from "react";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -66,6 +67,15 @@ export const authApi = baseApi.injectEndpoints({
       }),
       providesTags: ["GetProfileVisitor"],
     }),
+
+    // unfollow funtionality
+    unFollow: builder.mutation({
+      query: (followingId: string) => ({
+        url: `/follow/${followingId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["UnFollow"],
+    }),
   }),
 });
 
@@ -76,5 +86,6 @@ export const {
   useGetNewmemberQuery,
   useFetchFollowingQuery,
   useCreateProfileVisitorMutation,
-  useGetProfileVisitorQuery
+  useGetProfileVisitorQuery,
+  useUnFollowMutation,
 } = authApi;

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { SlCalender } from "react-icons/sl";
 import birthdayImage from "@/assets/birthday.jpeg";
 import Image from "next/image";
@@ -7,10 +7,10 @@ import {
   useGetNewmemberQuery,
   useAddFollowMutation,
   useFetchFollowingQuery,
+  useUnFollowMutation,
 } from "@/redux/birthdayApi/birthdayApi";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { useSelector } from "react-redux";
-// import { RootState } from "@/redux/store";
 import toast from "react-hot-toast";
 import { RootState } from "@/redux/rootReducer";
 
@@ -39,47 +39,52 @@ const NewMember = () => {
   const { data: followingData, isFetching: isFetchingFollowing } =
     useFetchFollowingQuery({});
   const [addFollow] = useAddFollowMutation();
+  const [unFollow] = useUnFollowMutation();
 
   const token = useSelector((state: RootState) => state.auth.token);
   const decodedToken = token ? (jwt.decode(token) as DecodedToken) : null;
 
   const currentUserId = decodedToken ? decodedToken.id : null;
-  console.log(currentUserId);
+
+  // Keep track of the local follow state
+  const [localFollowing, setLocalFollowing] = useState<string[]>(
+    followingData?.data?.following.map((user: { id: string }) => user.id) || []
+  );
+
   const newMembers: Member[] = newMemberData?.data || [];
-  
-  const followingIds: string[] =
-    followingData?.data?.following.map((user: { id: string }) => user.id) || [];
-  // const totalFollowing: number = followingData?.data?.totalFollowing || 0;
 
-  const getFollowersForUser = (userId: string) => {
-    const user: { id: string; userName: string } | undefined =
-      followingData?.data?.following.find(
-        (follower: { id: string }) => follower.id === userId
-      );
-    return user ? [user.userName] : []; 
-  };
-
-  const handleFollow = async (
+  // Handle Follow/Unfollow toggle
+  const handleFollowToggle = async (
     userId: string,
     e: React.MouseEvent<HTMLButtonElement>
   ) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default behavior of the button
+
     if (currentUserId === userId) {
       toast.error("You cannot follow yourself.");
       return;
     }
 
-    if (followingIds.includes(userId)) {
-      toast.error("You are already following this user.");
-      return;
-    }
-
-    try {
-      await addFollow(userId).unwrap();
-      toast.success("Following successful!");
-    } catch (error) {
-      console.error("Failed to follow:", error);
-      toast.error("Failed to follow. Please try again.");
+    if (localFollowing.includes(userId)) {
+      // Unfollow
+      try {
+        await unFollow(userId).unwrap();
+        setLocalFollowing((prev) => prev.filter((id) => id !== userId));
+        toast.success("Unfollowed successfully!");
+      } catch (error) {
+        console.error("Failed to unfollow:", error);
+        toast.error("Failed to unfollow. Please try again.");
+      }
+    } else {
+      // Follow
+      try {
+        await addFollow(userId).unwrap();
+        setLocalFollowing((prev) => [...prev, userId]);
+        toast.success("Followed successfully!");
+      } catch (error) {
+        console.error("Failed to follow:", error);
+        toast.error("Failed to follow. Please try again.");
+      }
     }
   };
 
@@ -139,37 +144,26 @@ const NewMember = () => {
               <div className="text-center md:text-left">
                 <h2 className="text-white font-bold text-lg md:text-2xl">
                   {member.firstName} {member.lastName}
-                  <button
-                    className={`ml-4 font-medium text-sm md:text-base px-4 py-2 rounded-md ${
-                      followingIds.includes(member.id)
-                        ? "text-gray-400  cursor-not-allowed"
-                        : "text-[#FEB800]"
-                    }`}
-                    onClick={(e) => handleFollow(member.id, e)}
-                    disabled={
-                      followingIds.includes(member.id) ||
-                      currentUserId === member.id
-                    }
-                  >
-                    {followingIds.includes(member.id)
-                      ? "Following"
-                      : currentUserId === member.id
-                      ? "You"
-                      : "Follow"}
-                  </button>
+                  {currentUserId === member.id ? (
+                    <span className="ml-4 font-medium text-gray-400">
+                      You
+                    </span>
+                  ) : (
+                    <button
+                      type="button" // Prevent default form submission
+                      className={`ml-4 font-medium text-sm md:text-base px-4 py-2 rounded-md ${
+                        localFollowing.includes(member.id)
+                          ? "text-gray-400 cursor-pointer"
+                          : "text-[#FEB800]"
+                      }`}
+                      onClick={(e) => handleFollowToggle(member.id, e)} // Toggle Follow/Unfollow
+                    >
+                      {localFollowing.includes(member.id)
+                        ? "Following"
+                        : "Follow"}
+                    </button>
+                  )}
                 </h2>
-                {/* Show Follower Count */}
-                {(() => {
-                  const followers = getFollowersForUser(member.id);
-                  return (
-                    <>
-                      <p className="text-gray-300 text-[20px] font-medium">
-                        {followers.length} Follower
-                        {/* {followers.length !== 1 ? "s" : ""} */}
-                      </p>
-                    </>
-                  );
-                })()}
               </div>
             </div>
 
