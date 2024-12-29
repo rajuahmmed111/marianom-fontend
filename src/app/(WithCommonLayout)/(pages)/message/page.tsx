@@ -8,6 +8,7 @@ import { ImNotification } from "react-icons/im";
 import userImage from "@/assets/profile.png";
 import senderImage from "@/assets/profile.png";
 import ActiveImg from "@/assets/messageimg.jpeg";
+import { useGetMessageQuery } from "@/redux/features/message/messageApi";
 
 // Sample conversation data
 const conversations = [
@@ -70,7 +71,12 @@ const conversations = [
   },
 ];
 
+
 export default function MessagePage() {
+
+
+  const {data} = useGetMessageQuery({})
+  console.log('my data', data);
   const [message, setMessage] = useState("");
   const [selectedConversation, setSelectedConversation] = useState(conversations[0]);
 
