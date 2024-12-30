@@ -2,10 +2,9 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['192.168.11.253', 'picsum.photos', 'avatar.iran.liara.run'],
+    domains: ['192.168.11.253', 'picsum.photos', 'avatar.iran.liara.run', 'localhost'],
     // Disable the built-in image optimization when using an external CDN or serving images
     unoptimized: false,
-    domains: ['localhost', 'picsum.photos', '192.168.11.253'],
 
     // Allow loading images from all origins
     remotePatterns: [

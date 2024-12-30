@@ -34,7 +34,7 @@ import { toast } from "sonner";
 import avatar from "@/assets/avatar.jpg";
 import Videos from "@/components/ui/Videos";
 import { useCommentPostApiMutation } from "@/redux/features/comment/commentApi";
-import { useFetchFollowingQuery } from "@/redux/birthdayApi/birthdayApi";
+import { useFetchFollowingQuery } from "@/redux/features/follow/followApi";
 
 interface DecodedToken extends JwtPayload {
   id: string;

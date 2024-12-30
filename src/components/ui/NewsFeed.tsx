@@ -42,8 +42,6 @@ export default function NewsFeed() {
 
   // Fetch Following Data
   const { data: followingData } = useFetchFollowingQuery({});
-  const followingIds: string[] =
-    followingData?.data?.following.map((user: { id: string }) => user.id) || [];
 
   // Create Profile Visitor Mutation
   const [createProfileVisitor] = useCreateProfileVisitorMutation();

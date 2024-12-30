@@ -5,11 +5,11 @@ import Image from "next/image";
 import LogoImg from "@/assets/logo.jpeg";
 import { FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
 import Background from "@/assets/background/authbg.jpeg";
-import { useRegisterUserMutation } from "@/redux/auth/authApi";
+import { useRegisterMutation } from "@/redux/features/authSlice/authApi";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [registerUser, { isLoading }] = useRegisterUserMutation();
+  const [registerUser, { isLoading }] = useRegisterMutation();
 
   const [formData, setFormData] = useState({
     email: "",
