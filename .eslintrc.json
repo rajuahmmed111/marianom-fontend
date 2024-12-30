@@ -3,6 +3,7 @@
   "rules": {
     "@typescript-eslint/no-explicit-any": "off", // This rule enforces no implicit any
     "no-explicit-any": "off", // Disable the base ESLint no-explicit-any rule (to avoid conflicts)
-    "no-undef": "error"
+    "no-undef": "error",
+     "@typescript-eslint/no-empty-object-type": "off"
   }
 }

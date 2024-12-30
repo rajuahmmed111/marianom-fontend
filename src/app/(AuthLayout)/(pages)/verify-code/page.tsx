@@ -1,9 +1,10 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import LogoImg from '@/assets/logo.jpeg';
 import check from '@/assets/check.png';
-import { useRouter, useSearchParams } from 'next/navigation';
+// import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useVerifyOtpMutation } from '@/redux/features/authSlice/authApi';
 import { toast } from 'sonner';
 import { setUser } from "@/redux/features/authSlice/authSlice";
@@ -12,11 +13,25 @@ import { useDispatch } from 'react-redux';
 
 export default function VerifyCodePage() {
   const [code, setCode] = useState(['', '', '', '', '', '']);
-  const searchParams = useSearchParams();
-  const hexCode: any = searchParams.get('hexCode');
+  const [show, setShow] = useState(false)
+  // const searchParams = useSearchParams();
+
+
+
+  const [hexCode, setHexCode] = useState<string>('');
+
+  useEffect(() => {
+    if (window) {
+      setShow(true);
+      const params = window.location.href
+
+      setHexCode(params.toString().split('hexCode=')[1]);  // Set hexCode when searchParams are available
+    }
+  }, [])
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return; // Allow only single-character input
+
 
     const newCode = [...code];
     newCode[index] = value;
@@ -39,7 +54,7 @@ export default function VerifyCodePage() {
 
   const [verifyOtp] = useVerifyOtpMutation();
   const router = useRouter();
-const dispatch = useDispatch()
+  const dispatch = useDispatch()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Verification Code:', code.join(''));
@@ -47,7 +62,7 @@ const dispatch = useDispatch()
     const otp = code.join('');
 
     try {
-      const res = await verifyOtp({ hexCode, otp }).unwrap();
+      const res = await verifyOtp({ hexCode: hexCode as string, otp }).unwrap();
       console.log(res.data);
       if (res.success) {
         toast.success(res.message);
@@ -70,60 +85,62 @@ const dispatch = useDispatch()
     }
   };
 
+  if (!show) return;
+
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-    <div
-      className='flex justify-center items-center min-h-screen'
-      style={{
-        backgroundColor: '#4C3F14',
-      }}>
-      <div className='bg-[#0000003D] backdrop:blur-[24px] shadow-md rounded-lg p-8 max-w-md w-full'>
-        <div className='flex items-center justify-center pb-8'>
-          <Image
-            src={LogoImg.src}
-            alt='Plumppr'
-            width={LogoImg.width}
-            height={LogoImg.height}
-            className='h-auto w-44'
-          />
-        </div>
-        <Image
-          src={check}
-          width={80}
-          className='mx-auto'
-          alt='check success image'
-        />
-        <h2 className='text-white text-[40px] font-bold text-center pb-4'>
-          Success
-        </h2>
-        <p className='text-white text-center text-sm mb-6'>
-          Please check your email to create a new password
-        </p>
-        <form
-          className='space-y-6'
-          onSubmit={handleSubmit}>
-          <div className='flex justify-center gap-2'>
-            {code.map((value, index) => (
-              <input
-                key={index}
-                id={`otp-input-${index}`}
-                type="text"
-                maxLength={1}
-                value={value}
-                onChange={(e) => handleChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                className="w-12 h-12 text-center border rounded-md focus:ring-2 focus:ring-yellow-500 focus:outline-none bg-transparent text-white text-xl"
-              />
-            ))}
+      <div
+        className='flex justify-center items-center min-h-screen'
+        style={{
+          backgroundColor: '#4C3F14',
+        }}>
+        <div className='bg-[#0000003D] backdrop:blur-[24px] shadow-md rounded-lg p-8 max-w-md w-full'>
+          <div className='flex items-center justify-center pb-8'>
+            <Image
+              src={LogoImg.src}
+              alt='Plumppr'
+              width={LogoImg.width}
+              height={LogoImg.height}
+              className='h-auto w-44'
+            />
           </div>
-          <button
-            type='submit'
-            className='w-full bg-yellow-500 text-white font-medium py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2'>
-            Submit
-          </button>
-        </form>
+          <Image
+            src={check}
+            width={80}
+            className='mx-auto'
+            alt='check success image'
+          />
+          <h2 className='text-white text-[40px] font-bold text-center pb-4'>
+            Success
+          </h2>
+          <p className='text-white text-center text-sm mb-6'>
+            Please check your email to create a new password
+          </p>
+          <form
+            className='space-y-6'
+            onSubmit={handleSubmit}>
+            <div className='flex justify-center gap-2'>
+              {code.map((value, index) => (
+                <input
+                  key={index}
+                  id={`otp-input-${index}`}
+                  type="text"
+                  maxLength={1}
+                  value={value}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  className="w-12 h-12 text-center border rounded-md focus:ring-2 focus:ring-yellow-500 focus:outline-none bg-transparent text-white text-xl"
+                />
+              ))}
+            </div>
+            <button
+              type='submit'
+              className='w-full bg-yellow-500 text-white font-medium py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2'>
+              Submit
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
     </React.Suspense>
   );
 }

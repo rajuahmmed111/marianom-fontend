@@ -5,7 +5,7 @@ import Image from "next/image";
 import LogoImg from "@/assets/logo.jpeg";
 import { FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
 import Background from "@/assets/background/authbg.jpeg";
-import { useRegisterMutation } from '@/redux/features/authSlice/authApi';
+import { useRegisterMutation } from "@/redux/features/authSlice/authApi";
 
 export default function RegisterPage() {
   const router = useRouter();

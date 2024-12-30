@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import ProfileImg from "@/assets/profile.png";
 import { CgProfile } from "react-icons/cg";
@@ -7,7 +7,7 @@ import { IoMdPhotos, IoMdClose } from "react-icons/io";
 import { RiUserCommunityLine } from "react-icons/ri";
 import RightSide from "./RightSide";
 import Birthday from "./Birthday";
-import NewMember from "./NewMember";
+// import NewMember from "./NewMember";
 import LatestEveryone from "./LatestEveryone";
 import NeearByOnline from "./NeearByOnline";
 import Link from "next/link";
@@ -16,31 +16,70 @@ import { useGetProfileQuery } from "@/redux/features/authSlice/authApi";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import jwt, { JwtPayload } from "jsonwebtoken";
-// import { profile } from "console";
+import {
+  useCreateProfileVisitorMutation,
+  useGetProfileVisitorQuery,
+} from "@/redux/features/profileVisitor/profileVisitorApi";
+
+import NewMember from "./NewMember";
+import { useFetchFollowingQuery } from "@/redux/birthdayApi/birthdayApi";
+
+
 
 interface DecodedToken extends JwtPayload {
   id: string;
-  email: string
+  email: string;
 }
 
 export default function NewsFeed() {
   const [activeTab, setActiveTab] = useState<string>("global");
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [show, setShow] = useState(false)
 
-  const token = useSelector((state: RootState) => state.auth.token)
-
-
+  const token = useSelector((state: RootState) => state.auth.token);
   const decodedToken = token ? (jwt.decode(token) as DecodedToken) : null;
-
-
   const id = decodedToken ? decodedToken.id : null;
 
-  // console.log('My profile id is', id);
-  const { data: MyProfile } = useGetProfileQuery(id)
-  console.log(MyProfile);
+  useEffect(() => {
+    if (window) {
+      setShow(true)
+    }
+  }, [])
 
+  // Fetch Profile Data
+  const { data: MyProfile } = useGetProfileQuery(id);
+
+  // Fetch Following Data
+  const { data: followingData } = useFetchFollowingQuery({});
+
+  // Create Profile Visitor Mutation
+  const [createProfileVisitor] = useCreateProfileVisitorMutation();
+
+  // Log Profile Visits
+  useEffect(() => {
+    if (id && followingData?.data?.following?.length > 0) {
+      const idsToProcess: string[] = followingData.data.following.map(
+        (user: { id: string }) => user.id
+      );
+
+      idsToProcess.forEach((followingId: any) => {
+        createProfileVisitor({ userId: id, followingId });
+      });
+    }
+  }, [id, followingData, createProfileVisitor]);
+
+  // Fetch Profile Visitor Data
+  const {
+    data: visitorData,
+    isLoading,
+    error,
+  } = useGetProfileVisitorQuery(id, {
+    skip: !id, // Skip query if no userId
+  });
 
   const toggleDrawer = () => setIsDrawerOpen((prev) => !prev);
+
+  if (!show) return null
 
   return (
     <div className="pt-48">
@@ -58,17 +97,19 @@ export default function NewsFeed() {
         <aside className="w-[321px] bg-secondary text-white p-5 space-y-6 hidden md:block">
           <ProfileSection MyProfile={MyProfile} />
           <SidebarNav activeTab={activeTab} setActiveTab={setActiveTab} />
-          <VisitorsSection />
+          <VisitorsSection
+            visitorData={visitorData}
+            isLoading={isLoading}
+            error={error}
+          />
           <OnlineSection />
         </aside>
 
         {/* Drawer Sidebar for Mobile */}
         <aside
-          className={`fixed top-48 left-0 h-full w-[100%] bg-secondary text-white p-5 z-50 transform ${
-            isDrawerOpen ? "translate-x-0" : "-translate-x-full"
-          } transition-transform duration-300 md:hidden`}
+          className={`fixed top-48 left-0 h-full w-[100%] bg-secondary text-white p-5 z-50 transform ${isDrawerOpen ? "translate-x-0" : "-translate-x-full"
+            } transition-transform duration-300 md:hidden`}
         >
-          {/* Close Button */}
           <button
             onClick={toggleDrawer}
             className="absolute top-4 right-4 text-white"
@@ -83,7 +124,11 @@ export default function NewsFeed() {
               setIsDrawerOpen(false);
             }}
           />
-          <VisitorsSection />
+          <VisitorsSection
+            visitorData={visitorData}
+            isLoading={isLoading}
+            error={error}
+          />
           <OnlineSection />
         </aside>
 
@@ -116,8 +161,9 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ MyProfile }) => {
         className="rounded-full mb-3"
       />
       <div className="text-center">
-        <h2 className="text-lg font-semibold mb-1">{MyProfile?.data?.firstName }</h2>
-        {/* <h2>{MyProfile?.data?.firstName}</h2> */}
+        <h2 className="text-lg font-semibold mb-1">
+          {MyProfile?.data?.firstName}
+        </h2>
         <Link href="/profile">
           <p className="border-b border-[#796943] inline-block">My account</p>
         </Link>
@@ -153,20 +199,17 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ activeTab, setActiveTab }) => {
 
       {tabs.map((tab) =>
         tab.button ? (
-          // Render clickable buttons
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`font-normal text-base px-5 py-2 rounded-md flex items-center gap-2 ${
-              activeTab === tab.key
-                ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
-                : "bg-transparent"
-            }`}
+            className={`font-normal text-base px-5 py-2 rounded-md flex items-center gap-2 ${activeTab === tab.key
+              ? "bg-gradient-to-r from-[#FEB800]/50 to-[#986E00]/0 text-white"
+              : "bg-transparent"
+              }`}
           >
             {tab.icon} {tab.name}
           </button>
         ) : (
-          // Render static content
           <div
             key={tab.key}
             className="font-semibold text-[18px]  py-2  flex items-center gap-2 text-white cursor-not-allowed"
@@ -180,16 +223,31 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ activeTab, setActiveTab }) => {
 };
 
 /** Visitors Section Component */
-const VisitorsSection: React.FC = () => {
+interface VisitorsSectionProps {
+  visitorData: any;
+  isLoading: boolean;
+  error: any;
+}
+
+const VisitorsSection: React.FC<VisitorsSectionProps> = ({
+  visitorData,
+  isLoading,
+  error,
+}) => {
+  if (isLoading) return <div>Loading visitors...</div>;
+  if (error) return <div>Error loading visitors.</div>;
+
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-3">Visited my profile (204)</h3>
+      <h3 className="text-lg font-semibold mb-3">
+        Visited my profile ({visitorData?.data?.length || 0})
+      </h3>
       <div className="grid grid-cols-4 gap-2">
-        {[...Array(10)].map((_, index) => (
+        {visitorData?.data?.map((visitor: any, index: number) => (
           <Image
             key={index}
-            src={ProfileImg.src}
-            alt={`Visitor ${index + 1}`}
+            src={visitor.profilePicture || ProfileImg.src}
+            alt={`Visitor ${visitor.name || "Anonymous"}`}
             width={40}
             height={40}
             className="rounded-full"
@@ -204,7 +262,9 @@ const VisitorsSection: React.FC = () => {
 const OnlineSection: React.FC = () => {
   return (
     <div>
-      <h3 className="text-lg font-semibold mt-5 mb-3">Currently online (1204)</h3>
+      <h3 className="text-lg font-semibold mt-5 mb-3">
+        Currently online (1204)
+      </h3>
       <div className="grid grid-cols-4 gap-2">
         {[...Array(10)].map((_, index) => (
           <Image

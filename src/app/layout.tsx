@@ -5,7 +5,8 @@ import Background from '@/assets/background/bg.png';
 import React from 'react';
 import Header from '@/components/common/Header';
 import ReduxProvider from '@/redux/api/provider/ReduxProvider';
-// import { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -24,6 +25,10 @@ export const metadata: Metadata = {
   description:
     'A site for guys into gaining and encouraging, bellies, chubby bears, gay chubs and admirers',
 };
+
+// const pathName = typeof window !== 'undefined' ? window.location.pathname : '';
+
+// const isLogin = pathName === '/login';
 
 const pathName = typeof window !== 'undefined' ? window.location.pathname : '';
 
@@ -62,12 +67,16 @@ export default function RootLayout({
           <div className='md:px-5'>
             {!isLogin ? (
               <div className='md:rounded-lg text-text'>{children}</div>
-            ) : (
-              <>{children}</>
-            )}
-          </div>
-          <div className='md:container'></div>
-        </ReduxProvider>
+             ) : ( 
+              <>
+                {children}
+                
+              </>
+             )} 
+        </div>
+        <Toaster/>
+        <div className='md:container'></div>
+          </ReduxProvider>
       </body>
     </html>
   );

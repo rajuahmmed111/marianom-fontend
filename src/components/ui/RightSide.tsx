@@ -4,8 +4,7 @@ import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegCommentDots } from "react-icons/fa";
 import profileImage from "@/assets/profile.png";
 import { useSelector } from "react-redux";
-import { RootState } from "@/redux/rootReducer"; // Adjust the import path for your rootReducer
-
+import { RootState } from "@/redux/rootReducer"; 
 // TypeScript type definition for a post
 interface Post {
   id: string;

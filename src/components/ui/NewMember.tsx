@@ -1,19 +1,21 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { SlCalender } from "react-icons/sl";
 import birthdayImage from "@/assets/birthday.jpeg";
 import Image from "next/image";
 import {
-  useGetNewmemberQuery,
-  useAddFollowMutation,
-  useFetchFollowingQuery,
-} from "@/redux/birthdayApi/birthdayApi";
+
+  useUnFollowMutation,
+} from "@/redux/features/follow/followApi";
+
+import { useGetNewMemberQuery } from "@/redux/features/newMember/newMemberApi";
+
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { useSelector } from "react-redux";
-// import { RootState } from "@/redux/store";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import { RootState } from "@/redux/rootReducer";
-
-
+import { toast } from "sonner";
+import { useAddFollowMutation, useFetchFollowingQuery } from "@/redux/birthdayApi/birthdayApi";
 
 // Define the Member interface
 interface Member {
@@ -30,34 +32,68 @@ interface Member {
   currentLocation: string;
 }
 
+interface DecodedToken extends JwtPayload {
+  id: string;
+  email: string;
+}
+
+interface HandleFollowToggleEvent
+  extends React.MouseEvent<HTMLButtonElement> { }
+
 const NewMember = () => {
-  const { data: newMemberData, isLoading, error } = useGetNewmemberQuery({});
-  const { data: followingData, isFetching: isFetchingFollowing } = useFetchFollowingQuery({});
+  const { data: newMemberData, isLoading, error } = useGetNewMemberQuery({});
+  const { data: followingData, isFetching: isFetchingFollowing } =
+    useFetchFollowingQuery({});
   const [addFollow] = useAddFollowMutation();
+  const [unFollow] = useUnFollowMutation();
 
-  const currentUserId = useSelector((state: RootState) => state?.auth.user);
-  console.log(currentUserId)
+  const token = useSelector((state: RootState) => state.auth.token);
+  const decodedToken = token ? (jwt.decode(token) as DecodedToken) : null;
+
+  const currentUserId = decodedToken ? decodedToken.id : null;
+
+  // Keep track of the local follow state
+  const [localFollowing, setLocalFollowing] = useState<string[]>([]);
+
+  React.useEffect(() => {
+    if (followingData?.data?.following) {
+      setLocalFollowing(followingData.data.following.map((user: { id: string }) => user.id));
+    }
+  }, [followingData]);
+
   const newMembers: Member[] = newMemberData?.data || [];
-  const followingIds: string[] = followingData?.data?.following.map((user: { id: string }) => user.id) || [];
-  const totalFollowing: number = followingData?.data?.totalFollowing || 0;
 
-  const handleFollow = async (userId: string) => {
+
+
+  const handleFollowToggle = async (
+    userId: string,
+    e: HandleFollowToggleEvent
+  ) => {
+    e.preventDefault();
+
     if (currentUserId === userId) {
       toast.error("You cannot follow yourself.");
       return;
     }
 
-    if (followingIds.includes(userId)) {
-      toast.error("You are already following this user.");
-      return;
-    }
-
-    try {
-      await addFollow(userId).unwrap();
-      toast.success("Following successful!");
-    } catch (error) {
-      console.error("Failed to follow:", error);
-      toast.error("Failed to follow. Please try again.");
+    if (localFollowing.includes(userId)) {
+      try {
+        await unFollow(userId).unwrap();
+        setLocalFollowing((prev) => prev.filter((id) => id !== userId));
+        toast.success("Unfollowed successfully!");
+      } catch (error) {
+        console.error("Failed to unfollow:", error);
+        toast.error("Failed to unfollow. Please try again.");
+      }
+    } else {
+      try {
+        await addFollow(userId).unwrap();
+        setLocalFollowing((prev) => [...prev, userId]);
+        toast.success("Followed Successfully")
+      } catch (error) {
+        console.error("Failed to follow:", error);
+        toast.error("Failed to follow. Please try again.");
+      }
     }
   };
 
@@ -70,6 +106,16 @@ const NewMember = () => {
       <p className="text-red-500 text-center">Failed to load new members.</p>
     );
   }
+
+  // get followers
+
+  const getFollowersForUser = (userId: string) => {
+    const user: { id: string; userName: string } | undefined =
+      followingData?.data?.following.find(
+        (follower: { id: string }) => follower.id === userId
+      );
+    return user ? [user.userName] : [];
+  };
 
   return (
     <div className="bg-primary flex-1 min-h-screen p-4 md:p-6">
@@ -117,25 +163,33 @@ const NewMember = () => {
               <div className="text-center md:text-left">
                 <h2 className="text-white font-bold text-lg md:text-2xl">
                   {member.firstName} {member.lastName}
-                  <button
-                    className={`ml-4 font-medium text-sm md:text-base px-4 py-2 rounded-md ${
-                      followingIds.includes(member.id)
-                        ? "text-gray-400  cursor-not-allowed"
-                        : "text-[#FEB800]"
-                    }`}
-                    onClick={() => handleFollow(member.id)}
-                    disabled={
-                      followingIds.includes(member.id) || currentUserId === member.id
-                    }
-                  >
-                    {followingIds.includes(member.id)
-                      ? "Following"
-                      : currentUserId === member.id
-                      ? "Myself"
-                      : "Follow"}
-                  </button>
+                  {currentUserId === member.id ? (
+                    <span className="ml-4 font-medium text-gray-400">You</span>
+                  ) : (
+                    <button
+                      type="button" // Prevent default form submission
+                      className={`ml-4 font-medium text-sm md:text-base px-4 py-2 rounded-md ${localFollowing.includes(member.id)
+                          ? "text-gray-400 cursor-pointer"
+                          : "text-[#FEB800]"
+                        }`}
+                      onClick={(e) => handleFollowToggle(member.id, e)}
+                    >
+                      {localFollowing.includes(member.id)
+                        ? "Following"
+                        : "Follow"}
+                    </button>
+                  )}
                 </h2>
-                <p className="text-gray-300 text-[20px] font-medium">{totalFollowing} Follower</p>
+
+                {(() => {
+                  const followers = getFollowersForUser(member.id);
+                  return (
+                    <p className="text-gray-300 text-[20px] font-medium mt-2 mb-4">
+                      {followers.length} Follower
+                      {followers.length !== 1 ? "s" : ""}
+                    </p>
+                  );
+                })()}
               </div>
             </div>
 

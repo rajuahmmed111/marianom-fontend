@@ -23,17 +23,23 @@ import { useGetProfileQuery } from "@/redux/features/authSlice/authApi";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { useGetFavouriteQuery, useGetPostQuery, usePostApiMutation, usePostFavouriteMutation } from "@/redux/features/post/postApi";
+import {
+  useGetFavouriteQuery,
+  useGetPostQuery,
+  usePostApiMutation,
+  usePostFavouriteMutation,
+} from "@/redux/features/post/postApi";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import avatar from "@/assets/avatar.jpg"
+import avatar from "@/assets/avatar.jpg";
 import Videos from "@/components/ui/Videos";
 import { useCommentPostApiMutation } from "@/redux/features/comment/commentApi";
+import { useFetchFollowingQuery } from "@/redux/birthdayApi/birthdayApi";
 
 
 interface DecodedToken extends JwtPayload {
   id: string;
-  email: string
+  email: string;
 }
 
 export default function ProfilePage() {
@@ -43,22 +49,15 @@ export default function ProfilePage() {
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
 
-  const token = useSelector((state: RootState) => state.auth.token)
-
+  const token = useSelector((state: RootState) => state.auth.token);
 
   const decodedToken = token ? (jwt.decode(token) as DecodedToken) : null;
-
 
   const id = decodedToken ? decodedToken.id : null;
 
   // console.log('My profile id is', id);
-  const { data: getProfile } = useGetProfileQuery(id)
+  const { data: getProfile } = useGetProfileQuery(id);
   console.log(getProfile);
-
-
-
-
-
 
   // Handle Photo Upload
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,9 +83,9 @@ export default function ProfilePage() {
     setVideos((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const { register, handleSubmit, reset } = useForm()
+  const { register, handleSubmit, reset } = useForm();
 
-  const [postApi] = usePostApiMutation()
+  const [postApi] = usePostApiMutation();
 
   const handlePost = async (data: any) => {
     try {
@@ -115,18 +114,24 @@ export default function ProfilePage() {
     }
   };
 
-
-  const { data: getPost } = useGetPostQuery({})
+  const { data: getPost } = useGetPostQuery({});
   // console.log('My all post is', getPost?.data?.meta?.data[0].user);
 
 
-  const profileurls = getProfile?.data?.profileImage?.url !== null ? getProfile?.data?.profileImage?.url : avatar
+  const profileurls =
+    getProfile?.data?.profileImage
+      ? getProfile?.data?.profileImage
+      : avatar;
 
-  const [favoriteStates, setFavoriteStates] = useState<{ [key: string]: boolean }>({});
-  const { data: getFavourite } = useGetFavouriteQuery({})
-  const [postFavourite] = usePostFavouriteMutation()
+  console.log(profileurls);
+
+  const [favoriteStates, setFavoriteStates] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const { data: getFavourite } = useGetFavouriteQuery({});
+  const [postFavourite] = usePostFavouriteMutation();
   const handleFavoriteClick = async (postId: string) => {
-    console.log("my postId ", postId); // Debugging to confirm postId is a string
+    console.log("my postId ", postId);
 
     setFavoriteStates((prevState) => ({
       ...prevState,
@@ -134,7 +139,7 @@ export default function ProfilePage() {
     }));
 
     try {
-      await postFavourite(postId); // Ensure postId is sent correctly
+      await postFavourite(postId);
       toast.success("Post favorited successfully!");
     } catch (error) {
       console.error("Failed to favorite post:", error);
@@ -146,7 +151,7 @@ export default function ProfilePage() {
     if (getFavourite?.data) {
       const initialFavoriteStates: { [key: string]: boolean } = {};
       getFavourite.data.forEach((fav: any) => {
-        initialFavoriteStates[fav.postId] = true; // Mark the post as favorited
+        initialFavoriteStates[fav.postId] = true;
       });
       setFavoriteStates(initialFavoriteStates);
     }
@@ -158,7 +163,7 @@ export default function ProfilePage() {
   const [activePostId, setActivePostId] = useState<string | null>(null);
 
   const handleCommentClick = (postId: string) => {
-    console.log('my post id is', postId);
+    console.log("my post id is", postId);
     setActivePostId(postId); // Store the active post ID
     setShowModal(true);
   };
@@ -176,13 +181,12 @@ export default function ProfilePage() {
     }
     try {
       const payload = {
-        id: activePostId,
-        content: comment,
+        id: activePostId, // Post ID
+        content: comment, // Comment body
       };
-      console.log(payload);
       const res = await postComment(payload);
       if (res) {
-        console.log('my payload:', payload);
+        console.log("my payload:", payload);
         toast.success("Comment posted successfully!");
       } else {
         toast.error("Cannot post comment.");
@@ -195,6 +199,20 @@ export default function ProfilePage() {
     handleCloseModal();
   };
 
+  const [imageError, setImageError] = useState(false);
+  const handleImageError = () => {
+    setImageError(true);
+  };
+  const { data: followingData } =
+    useFetchFollowingQuery(undefined);
+
+  const getFollowersForUser = (userId: string) => {
+    const user: { id: string; userName: string } | undefined =
+      followingData?.data?.following.find(
+        (follower: { id: string }) => follower.id === userId
+      );
+    return user ? [user.userName] : [];
+  };
 
   return (
     <div className="bg-primary min-h-screen text-white p-4 md:p-8 container mx-auto mt-40 md:mt-48">
@@ -204,25 +222,36 @@ export default function ProfilePage() {
           {/* Profile Info */}
           <div className="flex flex-col md:flex-row items-center gap-6 w-full">
             <Image
-              src={profileurls}
+              src={imageError ? avatar : profileurls}
               alt="Profile Picture"
               width={120}
               height={120}
-              className="rounded-full border-4 border-yellow-500"
+              className="rounded-full object-cover w-[130px] h-[130px] border-4 border-yellow-500"
+              onError={handleImageError}
             />
             <div>
               <div className="flex flex-wrap items-center gap-4 md:gap-7">
                 <h1 className="text-2xl md:text-[32px] font-semibold">
-                  {getProfile?.data?.firstName + ' ' + getProfile?.data?.lastName}
+                  {getProfile?.data?.firstName +
+                    " " +
+                    getProfile?.data?.lastName}
                 </h1>
                 <button className="text-lg md:text-[18px] font-semibold flex items-center gap-1">
                   <GoPlus className="text-white" /> Follow
                 </button>
               </div>
-              <p className="text-[#98A2B3] text-sm md:text-[20px] font-medium mt-1 mb-4">
-                16k Followers
-              </p>
-              <div className="flex -space-x-3 mt-2">
+              {(() => {
+                const followers = id ? getFollowersForUser(id) : [];
+                return (
+                  <>
+                    <p className="text-gray-300 text-[20px] font-medium mt-2 mb-4">
+                      {followers.length} Follower
+                      {/* {followers.length !== 1 ? "s" : ""} */}
+                    </p>
+                  </>
+                );
+              })()}
+              <div className="flex -space-x-3 mt-\2">
                 {[...Array(4)].map((_, index) => (
                   <Image
                     key={index}
@@ -339,7 +368,6 @@ export default function ProfilePage() {
               </div>
             </form>
 
-
             {/* Media Preview Section */}
             <div className="mt-4 md:mt-8">
               {images.length > 0 && (
@@ -360,7 +388,6 @@ export default function ProfilePage() {
                           className="absolute -top-1 -right-1 bg-white rounded-full p-1 z-30"
                         >
                           <RxCross2 className="text-black" size={16} />
-
                         </button>
                       </div>
                     ))}
@@ -383,7 +410,6 @@ export default function ProfilePage() {
                           className="absolute -top-1 -right-1 bg-white rounded-full p-1 z-30"
                         >
                           <RxCross2 className="text-black" size={16} />
-
                         </button>
                       </div>
                     ))}
@@ -395,7 +421,6 @@ export default function ProfilePage() {
 
           {/* Posts */}
           <div className="space-y-6 mt-4 md:mt-8">
-
             {getPost?.data?.meta?.data && getPost.data.meta.data.length > 0 ? (
               getPost.data.meta.data.map((post: any, index: number) => (
                 <div
@@ -421,7 +446,9 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  <p className="text-sm md:text-base leading-relaxed">{post.description}</p>
+                  <p className="text-sm md:text-base leading-relaxed">
+                    {post.description}
+                  </p>
 
                   {post.images && post.images.length > 0 && (
                     <div className="image-gallery flex flex-wrap gap-4">
@@ -446,11 +473,19 @@ export default function ProfilePage() {
                         : ""
                         }`}
                     >
-                      {favoriteStates[post.id] || post?._count?.favoritedBy > 0 ? <MdFavorite /> : <MdFavoriteBorder />}
+                      {favoriteStates[post.id] ||
+                        post?._count?.favoritedBy > 0 ? (
+                        <MdFavorite />
+                      ) : (
+                        <MdFavoriteBorder />
+                      )}
                       Favorite
                     </button>
 
-                    <button className="hover:text-yellow-500 flex items-center gap-2 text-base" onClick={() => handleCommentClick(post.id)}>
+                    <button
+                      className="hover:text-yellow-500 flex items-center gap-2 text-base"
+                      onClick={() => handleCommentClick(post.id)}
+                    >
                       <FaRegCommentDots />
                       Comment
                     </button>
@@ -458,14 +493,14 @@ export default function ProfilePage() {
                 </div>
               ))
             ) : (
-              <div className="text-center text-gray-500">
-                No Post found.
-              </div>
+              <div className="text-center text-gray-500">No Post found.</div>
             )}
             {showModal && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                 <div className="bg-[#1F1F1F] rounded-lg shadow-md p-6 w-[90%] max-w-md text-white">
-                  <h2 className="text-lg font-semibold mb-4">Write a Comment</h2>
+                  <h2 className="text-lg font-semibold mb-4">
+                    Write a Comment
+                  </h2>
                   <div className="flex items-center gap-3">
                     <input
                       type="text"
@@ -489,15 +524,10 @@ export default function ProfilePage() {
                     Close
                   </button>
 
-                  <div>
-
-                  </div>
-
+                  <div></div>
                 </div>
               </div>
             )}
-
-
           </div>
         </div>
       )}
