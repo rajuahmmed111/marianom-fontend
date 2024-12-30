@@ -10,7 +10,7 @@ export const followApi = baseApi.injectEndpoints({
           method: "POST",
           body: { followingId },
         }),
-        invalidatesTags: ["Follow"],
+        invalidatesTags: ["Following"],
       }),
   
       // Fetch following
@@ -19,7 +19,7 @@ export const followApi = baseApi.injectEndpoints({
           url: "/follow/following",
           method: "GET",
         }),
-        providesTags: ["Follow"],
+        providesTags: ["Following"],
       }),
   
       // Unfollow functionality
@@ -28,7 +28,7 @@ export const followApi = baseApi.injectEndpoints({
           url: `/follow/${followingId}`,
           method: "DELETE",
         }),
-        invalidatesTags: ["UnFollow"],
+        invalidatesTags: ["Following"],
       }),
     }),
   });

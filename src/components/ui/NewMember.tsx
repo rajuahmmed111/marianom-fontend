@@ -37,12 +37,6 @@ interface DecodedToken extends JwtPayload {
   email: string;
 }
 
-/**
- * An interface for handling follow toggle events.
- * 
- * This interface extends `React.MouseEvent<HTMLButtonElement>`, 
- * and since it declares no additional members, it is equivalent to its supertype.
- */
 interface HandleFollowToggleEvent
 extends React.MouseEvent<HTMLButtonElement> {}
 
@@ -59,9 +53,13 @@ const NewMember = () => {
   const currentUserId = decodedToken ? decodedToken.id : null;
 
   // Keep track of the local follow state
-  const [localFollowing, setLocalFollowing] = useState<string[]>(
-    followingData?.data?.following.map((user: { id: string }) => user.id) || []
-  );
+  const [localFollowing, setLocalFollowing] = useState<string[]>([]);
+
+  React.useEffect(() => {
+    if (followingData?.data?.following) {
+      setLocalFollowing(followingData.data.following.map((user: { id: string }) => user.id));
+    }
+  }, [followingData]);
 
   const newMembers: Member[] = newMemberData?.data || [];
 

@@ -30,7 +30,7 @@ export const baseApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["User","Follow", "Birthday", "Newmember", "ProfileVisitor","GetProfileVisitor","UnFollow", "Comments", "NewMember", "Post"],
+  tagTypes: ["User","Following", "Birthday", "Newmember", "ProfileVisitor","GetProfileVisitor","UnFollow", "Comments", "NewMember", "Post"],
   endpoints: () => ({}),
 });
 
