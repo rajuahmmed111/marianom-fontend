@@ -1,7 +1,7 @@
 "use client";
 
 import ActiveImg from "@/assets/messageimg.jpeg";
-import { useGetChannelQuery } from "@/redux/features/message/messageApi";
+import { useGetChannelQuery, useLazyGetSingleMessageQuery } from "@/redux/features/message/messageApi";
 import { RootState } from "@/redux/store";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import Image from "next/image";
@@ -43,22 +43,33 @@ export interface DecodedToken extends JwtPayload {
 
 // const ws = new WebSocket(SOCKET_URL)
 
+
+
+
 export default function MessagePage() {
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null | any>(null);
+  const [selectedConversation, setSelectedConversation] = useState<any>(null);
+  const [getSingleMsg] = useLazyGetSingleMessageQuery()
 
 
   const { data } = useGetChannelQuery(undefined);
+  console.log(data);
 
   const token = useSelector((state: RootState) => state.auth.token);
   const decodedToken = token ? (jwt.decode(token) as DecodedToken) : null;
-
+  const [channelName, setChannelName] = useState<any>(null);
 
 
   // Handle selecting a new conversation
   const handleSelectConversation = async (channel: Conversation) => {
-    setSelectedConversation(channel);
+
+    setChannelName(channel)
+    const res = await getSingleMsg(channel?.channelName).unwrap();
+
+    if (res?.data) {
+      setSelectedConversation(res.data)
+    }
   };
-  console.log(`my select data is`, selectedConversation);
+
 
 
   return (
@@ -94,7 +105,10 @@ export default function MessagePage() {
                 key={index}
                 className={`flex items-center gap-3 cursor-pointer hover:bg-[#7A5E12] px-2 py-2 rounded-[8px] ${selectedConversation?.id === channel?.data?.id ? "bg-[#7A5E12]" : ""
                   }`}
-                onClick={() => handleSelectConversation(channel)}
+                onClick={() => {
+                  handleSelectConversation(channel)
+
+                }}
               >
                 <Image
                   src={ActiveImg}
@@ -136,7 +150,7 @@ export default function MessagePage() {
           <ChatWindow
             selectedConversation={selectedConversation}
             decodedToken={decodedToken}
-            channelName={data?.data[0].channelName}
+            channelName={channelName}
           />
 
         </div>

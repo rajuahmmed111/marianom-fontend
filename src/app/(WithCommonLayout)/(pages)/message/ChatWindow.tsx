@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 import { Conversation, DecodedToken } from "./page";
+import { IoMdNotifications } from "react-icons/io";
 
 interface ChatWindowProps {
     selectedConversation: Conversation | null | any;
@@ -24,16 +25,17 @@ export default function ChatWindow({
     console.log(channelName);
     const ws = useRef<WebSocket | null>(null);
 
+    console.log(`my select data is`, selectedConversation);
 
     useEffect(() => {
-        if (decodedToken) {
-            ws.current = new WebSocket("ws://192.168.11.172:3018");
+        if (decodedToken && selectedConversation) {
+            ws.current = new WebSocket(process.env.NEXT_PUBLIC_CHAT as string);
             ws.current.onopen = () => {
                 console.log("WebSocket Client Connected");
                 ws.current?.send(
                     JSON.stringify({
                         type: "message",
-                        channelId: channelName,
+                        channelId: channelName, // Ensure the correct channelName is sent
                     })
                 );
             };
@@ -42,7 +44,6 @@ export default function ChatWindow({
                 const parsedData = JSON.parse(event.data);
                 switch (parsedData.type) {
                     case "subscribed":
-                        // ekhane change ashbe res wise 
                         setMessage(parsedData.conversation.messages || []);
                         break;
                     case "message":
@@ -65,8 +66,7 @@ export default function ChatWindow({
                 ws.current?.close();
             };
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [channelName]);
+    }, [channelName, selectedConversation, decodedToken]);
 
 
     const handleSendMessage = () => {
@@ -86,17 +86,21 @@ export default function ChatWindow({
         }
     };
 
-    console.log(message);
+    console.log('my message: ', message);
 
 
     return (
         <div className="flex flex-col h-[650px] flex-1 w-full bg-[#58481F] text-white mt-4 md:mt-0 rounded-xl">
             {/* Chat Header */}
-            {/* <header className="flex justify-between items-center p-4 bg-[#FFFFFF1F]">
+            <header className="flex justify-between items-center p-4 bg-[#FFFFFF1F]">
                 {selectedConversation && (
                     <div className="flex items-center gap-3">
                         <Image
-                            src={userImage}
+                            src={
+                                decodedToken?.id === selectedConversation?.person1?.id
+                                    ? selectedConversation?.person2?.profileImage
+                                    : selectedConversation?.person1?.profileImage || ""
+                            }
                             alt="User"
                             width={40}
                             height={40}
@@ -104,18 +108,20 @@ export default function ChatWindow({
                         />
                         <div>
                             <h3 className="font-semibold text-lg md:text-xl">
-                                {decodedToken?.id === selectedConversation?.data[0]?.sender
-                                    ? selectedConversation?.data[0]?.receiverName
-                                    : selectedConversation?.data[0]?.senderName}
+                                {decodedToken?.id === selectedConversation?.person1?.id
+                                    ? `${selectedConversation?.person2?.firstName} ${selectedConversation?.person2?.lastName}`
+                                    : `${selectedConversation?.person1?.firstName} ${selectedConversation?.person1?.lastName}`}
                             </h3>
                             <p className="text-sm text-gray-400">Active now</p>
                         </div>
                         <IoMdNotifications className="text-[25px]" />
                     </div>
                 )}
-            </header> */}
+            </header>
+
 
             {/* Messages */}
+
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {message && message.length > 0 ? (
                     message?.map((msg, index) => (
