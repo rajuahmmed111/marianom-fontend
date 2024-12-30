@@ -116,6 +116,7 @@ export default function ProfilePage() {
   const { data: getPost } = useGetPostQuery({});
   // console.log('My all post is', getPost?.data?.meta?.data[0].user);
 
+
   const profileurls =
     getProfile?.data?.profileImage?.url !== null
       ? getProfile?.data?.profileImage?.url
@@ -127,7 +128,7 @@ export default function ProfilePage() {
   const { data: getFavourite } = useGetFavouriteQuery({});
   const [postFavourite] = usePostFavouriteMutation();
   const handleFavoriteClick = async (postId: string) => {
-    console.log("my postId ", postId); // Debugging to confirm postId is a string
+    console.log("my postId ", postId); 
 
     setFavoriteStates((prevState) => ({
       ...prevState,
@@ -135,7 +136,7 @@ export default function ProfilePage() {
     }));
 
     try {
-      await postFavourite(postId); // Ensure postId is sent correctly
+      await postFavourite(postId); 
       toast.success("Post favorited successfully!");
     } catch (error) {
       console.error("Failed to favorite post:", error);
@@ -147,7 +148,7 @@ export default function ProfilePage() {
     if (getFavourite?.data) {
       const initialFavoriteStates: { [key: string]: boolean } = {};
       getFavourite.data.forEach((fav: any) => {
-        initialFavoriteStates[fav.postId] = true; // Mark the post as favorited
+        initialFavoriteStates[fav.postId] = true; 
       });
       setFavoriteStates(initialFavoriteStates);
     }

@@ -11,7 +11,8 @@ import {
   usePostBirthdayWishMutation,
 } from "@/redux/features/birthday/birthdayApi"
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
+// import toast from "react-hot-toast";
 
 interface BirthdayPerson {
   id: string;

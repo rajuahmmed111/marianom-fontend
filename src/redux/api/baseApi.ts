@@ -19,13 +19,13 @@ export const baseApi = createApi({
       const authToken = state.auth.token; // Token from Redux store
 
       const searchParams = new URLSearchParams(window.location.search);
-      const tokenFromURL = searchParams.get("token"); // Token from URL query params
+      const tokenFromURL = searchParams.get("token"); 
 
       // Prioritize token from URL over Redux store
       const finalToken = tokenFromURL || authToken;
 
       if (finalToken) {
-        headers.set("Authorization", `${finalToken}`); // Add token to the Authorization header
+        headers.set("Authorization", `${finalToken}`); 
       }
       return headers;
     },

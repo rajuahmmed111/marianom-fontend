@@ -7,7 +7,7 @@ import { IoMdPhotos, IoMdClose } from "react-icons/io";
 import { RiUserCommunityLine } from "react-icons/ri";
 import RightSide from "./RightSide";
 import Birthday from "./Birthday";
-import NewMember from "./NewMember";
+// import NewMember from "./NewMember";
 import LatestEveryone from "./LatestEveryone";
 import NeearByOnline from "./NeearByOnline";
 import Link from "next/link";
@@ -21,6 +21,7 @@ import {
   useGetProfileVisitorQuery,
 } from "@/redux/features/profileVisitor/profileVisitorApi";
 import { useFetchFollowingQuery } from "@/redux/features/follow/followApi";
+import NewMember from "./NewMember";
 
 
 

@@ -8,13 +8,14 @@ import {
   useFetchFollowingQuery,
   useUnFollowMutation,
 } from "@/redux/features/follow/followApi";
-  
-  import {useGetNewMemberQuery} from "@/redux/features/newMember/newMemberApi"
+
+import { useGetNewMemberQuery } from "@/redux/features/newMember/newMemberApi";
 
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { useSelector } from "react-redux";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import { RootState } from "@/redux/rootReducer";
+import { toast } from "sonner";
 
 // Define the Member interface
 interface Member {
@@ -55,12 +56,14 @@ const NewMember = () => {
 
   const newMembers: Member[] = newMemberData?.data || [];
 
-  // Handle Follow/Unfollow toggle
+  interface HandleFollowToggleEvent
+    extends React.MouseEvent<HTMLButtonElement> {}
+
   const handleFollowToggle = async (
     userId: string,
-    e: React.MouseEvent<HTMLButtonElement>
+    e: HandleFollowToggleEvent
   ) => {
-    e.preventDefault(); // Prevent default behavior of the button
+    e.preventDefault();
 
     if (currentUserId === userId) {
       toast.error("You cannot follow yourself.");
@@ -68,7 +71,6 @@ const NewMember = () => {
     }
 
     if (localFollowing.includes(userId)) {
-      // Unfollow
       try {
         await unFollow(userId).unwrap();
         setLocalFollowing((prev) => prev.filter((id) => id !== userId));
@@ -78,11 +80,10 @@ const NewMember = () => {
         toast.error("Failed to unfollow. Please try again.");
       }
     } else {
-      // Follow
       try {
         await addFollow(userId).unwrap();
         setLocalFollowing((prev) => [...prev, userId]);
-        toast.success("Followed successfully!");
+        toast.success("Followed Successfully")
       } catch (error) {
         console.error("Failed to follow:", error);
         toast.error("Failed to follow. Please try again.");
@@ -99,6 +100,16 @@ const NewMember = () => {
       <p className="text-red-500 text-center">Failed to load new members.</p>
     );
   }
+
+  // get followers
+
+  const getFollowersForUser = (userId: string) => {
+    const user: { id: string; userName: string } | undefined =
+      followingData?.data?.following.find(
+        (follower: { id: string }) => follower.id === userId
+      );
+    return user ? [user.userName] : [];
+  };
 
   return (
     <div className="bg-primary flex-1 min-h-screen p-4 md:p-6">
@@ -147,9 +158,7 @@ const NewMember = () => {
                 <h2 className="text-white font-bold text-lg md:text-2xl">
                   {member.firstName} {member.lastName}
                   {currentUserId === member.id ? (
-                    <span className="ml-4 font-medium text-gray-400">
-                      You
-                    </span>
+                    <span className="ml-4 font-medium text-gray-400">You</span>
                   ) : (
                     <button
                       type="button" // Prevent default form submission
@@ -158,7 +167,7 @@ const NewMember = () => {
                           ? "text-gray-400 cursor-pointer"
                           : "text-[#FEB800]"
                       }`}
-                      onClick={(e) => handleFollowToggle(member.id, e)} // Toggle Follow/Unfollow
+                      onClick={(e) => handleFollowToggle(member.id, e)}
                     >
                       {localFollowing.includes(member.id)
                         ? "Following"
@@ -166,6 +175,16 @@ const NewMember = () => {
                     </button>
                   )}
                 </h2>
+
+                {(() => {
+                  const followers = getFollowersForUser(member.id);
+                  return (
+                    <p className="text-gray-300 text-[20px] font-medium mt-2 mb-4">
+                      {followers.length} Follower
+                      {followers.length !== 1 ? "s" : ""}
+                    </p>
+                  );
+                })()}
               </div>
             </div>
 
