@@ -2,27 +2,27 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['192.168.11.253', 'picsum.photos', 'avatar.iran.liara.run'],
-    // Disable the built-in image optimization when using an external CDN or serving images
-    unoptimized: false,
-    // domains: ['localhost', 'picsum.photos', '192.168.11.253'],
-
-    // Allow loading images from all origins
+    domains: [
+      '192.168.11.253',
+      'picsum.photos',
+      'avatar.iran.liara.run',
+      '192.168.11.172'
+    ],
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**', // Allows all subdomains and domains
+        protocol: 'http', // Explicitly allow HTTP
+        hostname: '192.168.11.172', // Specify your hostname
+      },
+      {
+        protocol: 'https', // Allow HTTPS for all
+        hostname: '**',
       },
     ],
-
-    // Enable device sizes for responsive images
+    unoptimized: false,
     deviceSizes: [320, 420, 768, 1024, 1200],
-
-    // Enable image sizes for static `Image` components
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-
-  reactStrictMode: true, // Ensures React is running in strict mode
+  reactStrictMode: true,
 };
 
 export default nextConfig;

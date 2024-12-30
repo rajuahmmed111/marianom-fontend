@@ -1,19 +1,16 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import LogoImg from "@/assets/logo.jpeg";
 import { IoSettingsOutline } from "react-icons/io5";
 import { usePathname } from "next/navigation";
-
 import Link from "next/link";
 import { MdClose, MdMenu } from "react-icons/md";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { logout } from "@/redux/features/authSlice/authSlice";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { RootState } from "@/redux/store";
-import { useSelector } from "react-redux";
-// import { useGetProfileQuery } from "@/redux/features/authSlice/authApi";
 
 interface DecodedToken extends JwtPayload {
   id: string;
@@ -22,34 +19,40 @@ interface DecodedToken extends JwtPayload {
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Unconditionally call all hooks
   const route = usePathname();
-  if (/^\/(singUp|login|forgetPassword|verifyCode|resetPassword)/.test(route)) return;
-
-  const toggleMenu: React.MouseEventHandler<HTMLButtonElement> = () => {
-    setIsMenuOpen((prevState) => !prevState);
-  };
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const token = useSelector((state: RootState) => state.auth.token);
-  // const { data: profileData } = useGetProfileQuery(decodedToken?.id || "", {
-  //   skip: !decodedToken,
-  // });
+  const dispatch = useDispatch();
+  const router = useRouter();
 
+  // Handle client-side rendering logic
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsClient(true);
+    }
+  }, []);
 
   // Decode the token unconditionally
   const decodedToken = token ? (jwt.decode(token) as DecodedToken) : null;
 
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const dispatch = useDispatch();
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const router = useRouter();
+  const toggleMenu: React.MouseEventHandler<HTMLButtonElement> = () => {
+    setIsMenuOpen((prevState) => !prevState);
+  };
 
   const handleLogOut = () => {
     dispatch(logout());
     router.push("/");
   };
 
+  // Conditional rendering
+  if (!isClient) return null; // Avoid rendering until the component is mounted
+
+  // Avoid rendering on certain routes
+  if (/^\/(signUp|login|forgetPassword|verifyCode|resetPassword)/.test(route)) {
+    return null;
+  }
 
   return (
     <>
@@ -120,27 +123,8 @@ const Header = () => {
               <div className="flex items-center border-r border-gray-300 pr-4">
                 {
                   decodedToken ? (
-                    <button onClick={handleLogOut} className="md:flex items-center px-4 py-2 text-white bg-red-900 rounded-md transition hidden">
-                      <span className="mr-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-5 h-5"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M15.75 9V5.25a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v13.5a2.25 2.25 0 002.25 2.25h6.75a2.25 2.25 0 002.25-2.25V15m-3-6l3 3m0 0l-3 3m3-3H9"
-                          />
-                        </svg>
-                      </span>
-                      Logout
-                    </button>
-                  ) : (
-                      <Link href={'/login'} className="md:flex items-center px-4 py-2 text-white bg-accent rounded-md transition hidden">
+                    <Link href={'/'}>
+                      <button onClick={handleLogOut} className="md:flex items-center px-4 py-2 text-white bg-red-900 rounded-md transition hidden">
                         <span className="mr-2">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -157,8 +141,29 @@ const Header = () => {
                             />
                           </svg>
                         </span>
-                        Log in
-                      </Link>
+                        Logout
+                      </button>
+                    </Link>
+                  ) : (
+                    <Link href={'/login'} className="md:flex items-center px-4 py-2 text-white bg-accent rounded-md transition hidden">
+                      <span className="mr-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.75 9V5.25a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v13.5a2.25 2.25 0 002.25 2.25h6.75a2.25 2.25 0 002.25-2.25V15m-3-6l3 3m0 0l-3 3m3-3H9"
+                          />
+                        </svg>
+                      </span>
+                      Log in
+                    </Link>
                   )
                 }
                 {/* <button onClick={handleLogOut} className="md:flex items-center px-4 py-2 text-white bg-red-900 rounded-md transition hidden">

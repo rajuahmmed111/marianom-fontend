@@ -1,21 +1,29 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import baseApi from '@/redux/api/baseApi';
 
-const socketapi = "http://192.168.11.172:3018/api/v1/messages";
+// const socketapi = "http://192.168.11.172:3018/api/v1/messages/channels";
 
-export const authApi = createApi({
-    reducerPath: 'authApi', // Required to specify the slice name
-    baseQuery: fetchBaseQuery({ baseUrl: socketapi }), // Set the base URL for your API
+export const MessageApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        getMessage: builder.query({
+        getChannel: builder.query({
             query: () => ({
-                url: '/channels', // Corrected URL path to get messages
+                url: '/messages/channels',
                 method: 'GET',
             }),
-            providesTags: ['message'],
+            providesTags: ['Message'],
+        }),
+        getSingleMessage: builder.query({
+            query: (channelName) => ({
+                url: `/messages/get-message/${channelName}`,
+                method: 'GET',
+            }),
+            providesTags: ['Message'],
         }),
     }),
 });
 
 export const {
-    useGetMessageQuery,
-} = authApi;
+    useGetChannelQuery,
+    useGetSingleMessageQuery,
+    useLazyGetSingleMessageQuery
+} = MessageApi;
+
