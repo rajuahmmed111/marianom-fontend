@@ -37,6 +37,15 @@ interface DecodedToken extends JwtPayload {
   email: string;
 }
 
+/**
+ * An interface for handling follow toggle events.
+ * 
+ * This interface extends `React.MouseEvent<HTMLButtonElement>`, 
+ * and since it declares no additional members, it is equivalent to its supertype.
+ */
+interface HandleFollowToggleEvent
+extends React.MouseEvent<HTMLButtonElement> {}
+
 const NewMember = () => {
   const { data: newMemberData, isLoading, error } = useGetNewMemberQuery({});
   const { data: followingData, isFetching: isFetchingFollowing } =
@@ -56,8 +65,7 @@ const NewMember = () => {
 
   const newMembers: Member[] = newMemberData?.data || [];
 
-  interface HandleFollowToggleEvent
-    extends React.MouseEvent<HTMLButtonElement> {}
+
 
   const handleFollowToggle = async (
     userId: string,

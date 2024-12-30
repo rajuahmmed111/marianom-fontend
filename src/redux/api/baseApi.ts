@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../rootReducer';
 
 
-const baseUrl = "http://192.168.11.253:3018/api/v1";
+const baseUrl = "http://192.168.11.172:3018/api/v1";
 
 if (!baseUrl) {
   throw new Error('Environment variable NEXT_PUBLIC_BASE_URL is not set');
@@ -13,7 +13,7 @@ if (!baseUrl) {
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://192.168.11.253:3018/api/v1",
+    baseUrl: "http://192.168.11.172:3018/api/v1",
     prepareHeaders: (headers, { getState }) => {
       const state = getState() as RootState;
       const authToken = state.auth.token; // Token from Redux store
