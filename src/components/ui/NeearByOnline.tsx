@@ -9,7 +9,7 @@ import { FaRegEdit } from "react-icons/fa";
 import profileImage from "@/assets/profile.png";
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import { useAddFollowMutation } from "@/redux/birthdayApi/birthdayApi";
+import { useAddFollowMutation } from "@/redux/features/follow/followApi";
 import { RootState } from "@/redux/rootReducer";
 
 const NeearByOnline = () => {

@@ -4,11 +4,13 @@ import { SlCalender } from "react-icons/sl";
 import birthdayImage from "@/assets/birthday.jpeg";
 import Image from "next/image";
 import {
-  useGetNewmemberQuery,
   useAddFollowMutation,
   useFetchFollowingQuery,
   useUnFollowMutation,
-} from "@/redux/birthdayApi/birthdayApi";
+} from "@/redux/features/follow/followApi";
+  
+  import {useGetNewMemberQuery} from "@/redux/features/newMember/newMemberApi"
+
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -35,7 +37,7 @@ interface DecodedToken extends JwtPayload {
 }
 
 const NewMember = () => {
-  const { data: newMemberData, isLoading, error } = useGetNewmemberQuery({});
+  const { data: newMemberData, isLoading, error } = useGetNewMemberQuery({});
   const { data: followingData, isFetching: isFetchingFollowing } =
     useFetchFollowingQuery({});
   const [addFollow] = useAddFollowMutation();

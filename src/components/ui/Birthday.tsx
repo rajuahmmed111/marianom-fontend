@@ -9,7 +9,7 @@ import avater from "@/assets/avater.png";
 import {
   useGetTodaysBirthdaysQuery,
   usePostBirthdayWishMutation,
-} from "@/redux/birthdayApi/birthdayApi";
+} from "@/redux/features/birthday/birthdayApi"
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 

@@ -18,9 +18,11 @@ import { RootState } from "@/redux/store";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import {
   useCreateProfileVisitorMutation,
-  useFetchFollowingQuery,
   useGetProfileVisitorQuery,
-} from "@/redux/birthdayApi/birthdayApi";
+} from "@/redux/features/profileVisitor/profileVisitorApi";
+import { useFetchFollowingQuery } from "@/redux/features/follow/followApi";
+
+
 
 interface DecodedToken extends JwtPayload {
   id: string;
@@ -49,8 +51,10 @@ export default function NewsFeed() {
   // Log Profile Visits
   useEffect(() => {
     if (id && followingData?.data?.following?.length > 0) {
-      const idsToProcess: string[] = followingData.data.following.map((user: { id: string }) => user.id);
-  
+      const idsToProcess: string[] = followingData.data.following.map(
+        (user: { id: string }) => user.id
+      );
+
       idsToProcess.forEach((followingId: any) => {
         createProfileVisitor({ userId: id, followingId });
       });
@@ -58,7 +62,11 @@ export default function NewsFeed() {
   }, [id, followingData, createProfileVisitor]);
 
   // Fetch Profile Visitor Data
-  const { data: visitorData, isLoading, error } = useGetProfileVisitorQuery(id, {
+  const {
+    data: visitorData,
+    isLoading,
+    error,
+  } = useGetProfileVisitorQuery(id, {
     skip: !id, // Skip query if no userId
   });
 
