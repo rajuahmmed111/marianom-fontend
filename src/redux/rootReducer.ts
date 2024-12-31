@@ -16,7 +16,7 @@ const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 
 export const reducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer,
-  auth: persistedAuthReducer, // Persisted auth reducer
+  auth: persistedAuthReducer, // Persisted auth reduce
 });
 
 export type RootState = ReturnType<typeof reducer>;
